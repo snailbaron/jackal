@@ -57,12 +57,12 @@ SolidBackground::SolidBackground(const Color& color)
     : _color(color)
 { }
 
-bool SolidBackground::contains(const ScreenVector& point)
+bool SolidBackground::contains(const ScreenVector&)
 {
     return false;
 }
 
-void SolidBackground::render(View& view)
+void SolidBackground::render(View&)
 {
     app().window()->clear(_color);
 }

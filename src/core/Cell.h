@@ -4,7 +4,7 @@
 #include "Pirate.h"
 
 enum TypeCellEnum {
-	// до 255 -- стрелки движения
+	// РґРѕ 255 -- СЃС‚СЂРµР»РєРё РґРІРёР¶РµРЅРёСЏ
 	Arrow				= 255,
 	Horse				= 256,
 	Ice					= 257,

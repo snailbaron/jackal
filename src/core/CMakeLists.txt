@@ -1,0 +1,9 @@
+add_library(core
+    Cell.cpp
+    ChangeMap.cpp
+    GameState.cpp
+    JackalGame.cpp
+    main.cpp
+    Point.cpp
+    TimeState.cpp
+)

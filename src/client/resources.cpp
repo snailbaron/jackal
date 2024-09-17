@@ -76,7 +76,7 @@ void drawCircle(
                 drawPixel(canvas, center.x + x, center.y + y, color);
             } else if (diff < 1) {
                 Color newColor = color;
-                newColor.a = static_cast<int>(
+                newColor.a = static_cast<uint8_t>(
                     std::round(color.a * (1 - diff)));
                 drawPixel(canvas, center.x + x, center.y + y, newColor);
             }

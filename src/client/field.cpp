@@ -72,7 +72,7 @@ Field::Field()
     : _position(20, 20)
 { }
 
-void Field::render(View& view)
+void Field::render(View&)
 {
     // Draw grid
     app().window()->drawGrid(
@@ -107,7 +107,7 @@ void Field::render(View& view)
         int playerId = i.first;
 		sdl::Texture pirateTexture;
 		switch (playerId) {
-		case 0: 
+		case 0:
 			pirateTexture = app().res().texture(TextureId::PirateRed);
 			break;
 		case 1:
@@ -123,9 +123,9 @@ void Field::render(View& view)
 
 		for (const auto& j : i.second) {
             const ClientGame::Cell& pirateCell = j.first;
-            int pirateCount = j.second;
+            int anotherPirateCount = j.second;
 
-            auto rects = pirateRects(pirateCell, pirateCount);
+            auto rects = pirateRects(pirateCell, anotherPirateCount);
             for (const auto& rect : rects) {
                 app().window()->drawTexture(pirateTexture, rect);
             }

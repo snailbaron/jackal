@@ -10,7 +10,7 @@ TimeState getNull()
 
 void ResetGameState(GameState& state)
 {
-	//заполняем поле
+	//Р·Р°РїРѕР»РЅСЏРµРј РїРѕР»Рµ
 	for (int i = 0; i<MAX_SIDE; i++)
 		for (int j = 0; j<MAX_SIDE; j++)
 		{
@@ -20,28 +20,28 @@ void ResetGameState(GameState& state)
 			state.map[i][j].type = Root;
 		}
 
-	//проливаем воду
+	//РїСЂРѕР»РёРІР°РµРј РІРѕРґСѓ
 	for (int i = 1; i<(MAX_SIDE-1); i++)
 		for (int j = 1; j<(MAX_SIDE-1); j++)
 		{
 			state.map[i][j].type = Water;
 		}
 
-	//закидываем остров землей
+	//Р·Р°РєРёРґС‹РІР°РµРј РѕСЃС‚СЂРѕРІ Р·РµРјР»РµР№
 	for (int i = 3; i<(3+SIZE_ISLAND); i++)
 		for (int j = 3; j<(3+SIZE_ISLAND); j++)
 		{
 			state.map[i][j].type = Closed;
 		}
 
-	// уголки с водой
+	// СѓРіРѕР»РєРё СЃ РІРѕРґРѕР№
 	state.map[3][3].type = Water;
 	state.map[3 + SIZE_ISLAND - 1][3].type = Water;
 	state.map[3 + SIZE_ISLAND - 1][3 + SIZE_ISLAND - 1].type = Water;
 	state.map[3][3 + SIZE_ISLAND - 1].type = Water;
 	state.cur_time = getNull();
 	
-	//выращиваем корабли
+	//РІС‹СЂР°С‰РёРІР°РµРј РєРѕСЂР°Р±Р»Рё
 	state.ships[0].x = 2;
 	state.ships[0].y = 3+(SIZE_ISLAND/2);
 	state.ships[0].z = 1;
@@ -55,7 +55,7 @@ void ResetGameState(GameState& state)
 	state.ships[3].y = 2;
 	state.ships[3].z = 1;
 
-	//в муках создаем пиратов
+	//РІ РјСѓРєР°С… СЃРѕР·РґР°РµРј РїРёСЂР°С‚РѕРІ
 	Pirate start_pirate;
 	start_pirate.live  = true;
 	start_pirate.money = false;
@@ -70,14 +70,14 @@ void ResetGameState(GameState& state)
 		state.pirates.push_back(start_pirate);
 	}
 
-	//делаем активными множество пиратов первого игрока
+	//РґРµР»Р°РµРј Р°РєС‚РёРІРЅС‹РјРё РјРЅРѕР¶РµСЃС‚РІРѕ РїРёСЂР°С‚РѕРІ РїРµСЂРІРѕРіРѕ РёРіСЂРѕРєР°
 	for (int i = 0; i<MAX_PIRATS_OF_PLAYER; i++)
 	{
 		state.movie_pirate.push_back(i);
 	}
 }
 
-//вернуть указатель на ячейку по координате
+//РІРµСЂРЅСѓС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЏС‡РµР№РєСѓ РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Рµ
 Cell* GetCell(GameState& state, const Point& point)
 {
 	int z = point.z;

@@ -111,7 +111,7 @@ void View::processEvent(const SDL_Event& evt)
     }
 }
 
-void View::processPointerInput(int x, int y, PointerAction action)
+void View::processPointerInput(int x, int y, PointerAction)
 {
     std::cerr << "Action at " << x << ", " << y << std::endl;
 }

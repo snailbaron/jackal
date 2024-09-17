@@ -6,7 +6,7 @@
 #include "gui_element.hpp"
 #include "field.hpp"
 #include "sdl_wrapper.hpp"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <map>
 #include <memory>
 #include <string>

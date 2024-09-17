@@ -6,7 +6,7 @@
 #include "Point.h"
 #include "ResponseType.h"
 
-//настройки
+//РЅР°СЃС‚СЂРѕР№РєРё
 const bool PIRATE_CAN_SWIM_ROUND_SHIP				= true;
 const bool TRIPS_REPEAT							= true;
 //bool AUTOMATICALLY_MONEY_DOWN				= false;

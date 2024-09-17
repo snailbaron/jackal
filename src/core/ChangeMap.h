@@ -4,8 +4,8 @@
 #include "TimeState.h"
 
 enum MoneyEventType{
-	up,						// взять монету
-	down,					// накласть монету на поле
+	up,						// РІР·СЏС‚СЊ РјРѕРЅРµС‚Сѓ
+	down,					// РЅР°РєР»Р°СЃС‚СЊ РјРѕРЅРµС‚Сѓ РЅР° РїРѕР»Рµ
 	not_money_event
 };
 

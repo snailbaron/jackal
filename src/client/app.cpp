@@ -2,7 +2,7 @@
 #include "gui.hpp"
 #include "client_game.hpp"
 #include "sdl_wrapper.hpp"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <utility>
 #include <fstream>
@@ -17,7 +17,7 @@ App::App(const std::string& configFile)
     _config = readAppConfig(configFile);
     _window = std::make_shared<Window>(_config.window);
     _resources = std::make_unique<Resources>(_window);
-     
+
     _view = std::make_unique<View>(_window);
 }
 

@@ -40,7 +40,7 @@ sdl::Surface Font::renderUtf8Blended(const std::string& text, const SDL_Color& f
 
     if (!surface) {
         throw TtfError("TTF_RenderUTF8_Blended");
-    }       
+    }
 
     return surface;
 }
@@ -95,7 +95,7 @@ Surface& Surface::operator=(const Surface& other)
         _surface = nullptr;
     }
 
-    return *this;        
+    return *this;
 }
 
 Surface& Surface::operator=(Surface&& other)

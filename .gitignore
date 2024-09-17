@@ -1,0 +1,9 @@
+/.vs/
+/bin/
+/build/
+*.swp
+*.vcxproj.user
+*.VC.db
+*.VC.opendb
+Full_Debug.txt
+Local_Debug.txt

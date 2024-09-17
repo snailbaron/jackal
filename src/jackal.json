@@ -1,0 +1,13 @@
+{
+    "window": {
+        "title": "Jackal Sexy Client",
+        "width": 1200,
+        "height": 900,
+        "fullscreen": false
+    },
+    "field": {
+        "background_color": [ 200, 200, 200 ],
+        "grid_color": [ 100, 100, 100 ],
+        "grid_width": 3
+    }
+}

@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1343826246 source:/home/essy/Project/JackalCoreCB/Cell.cpp
+	"Cell.h"
+
+1343982684 /home/essy/Project/JackalCoreCB/Cell.h
+	<vector>
+	"Pirate.h"
+
+1343982684 /home/essy/Project/JackalCoreCB/Pirate.h
+	"Point.h"
+
+1343991366 /home/essy/Project/JackalCoreCB/Point.h
+	<vector>
+	<iostream>
+

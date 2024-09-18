@@ -44,7 +44,7 @@ void WrittenText::resize(const ScreenVector& size)
 
     // Create texture with text
     sdl::Surface surface = font.renderUtf8Blended(_text, _textColor.sdl());
-    _texture = app().window()->createTextureFromSurface(surface);
+    _texture = app().window().createTextureFromSurface(surface);
 
     // Save offsets
     _screenOffset = (size - renderedSizeVector).loClamped(0) / 2;
@@ -64,7 +64,7 @@ bool SolidBackground::contains(const ScreenVector&)
 
 void SolidBackground::render(View&)
 {
-    app().window()->clear(_color);
+    app().window().clear(_color);
 }
 
 Button::Button(
@@ -110,22 +110,22 @@ void Button::action()
 
 void Button::render(View&)
 {
-    std::shared_ptr<Window> window = app().window();
+    Window& window = app().window();
     ScreenRect location = screenLocation();
 
-    window->drawRect(location, _frameColor);
-    window->drawRect(location.padded(frameWidth()), _bgColor);
-    window->drawTexturePart(_text.texture(), textArea().padded(_text.screenOffset()), _text.textureRect());
+    window.drawRect(location, _frameColor);
+    window.drawRect(location.padded(frameWidth()), _bgColor);
+    window.drawTexturePart(_text.texture(), textArea().padded(_text.screenOffset()), _text.textureRect());
 }
 
 ScreenRect Button::screenLocation() const
 {
-    return _location.screen(app().window()->size());
+    return _location.screen(app().window().size());
 }
 
 ScreenVector Button::screenSize() const
 {
-    return _location.size.screen(app().window()->size());
+    return _location.size.screen(app().window().size());
 }
 
 ScreenRect Button::textArea() const

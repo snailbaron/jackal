@@ -1,7 +1,7 @@
 #pragma once
 
 #include "window.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include <memory>
 #include <map>
 #include <array>
@@ -42,14 +42,15 @@ using ArrowDescription = std::array<bool, 8>;
 
 class Resources {
 public:
-    Resources(std::shared_ptr<const Window> window);
+    Resources(Window& window);
 
-    sdl::Texture texture(TextureId textureId) const;
+    sdl::Texture& texture(TextureId textureId);
     ttf::Font font(FontId fontId, int ptSize) const;
-    sdl::Texture arrowTexture(ArrowDescription arrows) const;
+    sdl::Texture& arrowTexture(ArrowDescription arrows);
 
 private:
-    std::shared_ptr<const Window> _window;
+    Window* _window = nullptr;
     std::map<TextureId, sdl::Texture> _textures;
     sdl::Surface _arrowBase;
+    std::map<ArrowDescription, sdl::Texture> _arrowTextures;
 };

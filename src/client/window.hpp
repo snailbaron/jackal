@@ -1,7 +1,7 @@
 #pragma once
 
 #include "geometry.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include <memory>
 #include <string>
 #include <tuple>
@@ -71,10 +71,10 @@ struct Color {
  */
 class Window {
 public:
+    Window() {}
     Window(const WindowConfiguration& windowConfig);
-    Window(const Window&) = delete;
 
-    sdl::Texture createTextureFromSurface(const sdl::Surface& surface) const;
+    sdl::Texture createTextureFromSurface(sdl::Surface& surface);
 
     int width() const;
     int height() const;
@@ -92,16 +92,16 @@ public:
     void drawRect(const ScreenRect& rect, const Color& color);
 
     // Draw a whole texture on screen
-    void drawTexture(const sdl::Texture& texture, int x, int y, int w, int h);
-    void drawTexture(const sdl::Texture& texture, ScreenRect rect);
+    void drawTexture(sdl::Texture& texture, int x, int y, int w, int h);
+    void drawTexture(sdl::Texture& texture, ScreenRect rect);
 
     // Draw a part of texture on screen
     void drawTexturePart(
-        const sdl::Texture& texture,
+        sdl::Texture& texture,
         int x, int y, int w, int h,
         int texX, int texY, int texW, int texH);
     void drawTexturePart(
-        const sdl::Texture& texture,
+        sdl::Texture& texture,
         const ScreenRect& target,
         const ScreenRect& src);
 

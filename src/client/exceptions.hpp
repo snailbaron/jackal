@@ -1,31 +1,14 @@
 #pragma once
 
 #include <exception>
+#include <source_location>
 #include <string>
 
-class SdlError : public std::exception {
+class Error : public std::exception {
 public:
-    SdlError(const std::string& sdlFunction);
-
-    const char* what() const noexcept override;
-
-private:
-    std::string _message;
-};
-
-class ImgError : public std::exception {
-public:
-    ImgError(const std::string& sdlImageFunction);
-
-    const char* what() const noexcept override;
-
-private:
-    std::string _message;
-};
-
-class TtfError : public std::exception {
-public:
-    TtfError(const std::string& sdlTtfFunction);
+    explicit Error(
+        std::string message,
+        std::source_location sl = std::source_location::current());
 
     const char* what() const noexcept override;
 

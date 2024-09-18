@@ -60,7 +60,7 @@ void drawPixel(
 {
     // TODO: Modify surface pixels directly, instead of filling a 1x1 rectangle
     SDL_Rect rect { x, y, 1, 1 };
-    canvas.fillRect(rect, SDL_MapRGBA(&canvas.format(), color.r, color.g, color.b, color.a));
+    canvas.fillRect(rect, SDL_MapRGBA(canvas->format, color.r, color.g, color.b, color.a));
 }
 
 void drawCircle(
@@ -121,8 +121,8 @@ sdl::Surface createArrowSurface(const sdl::Surface& base, ArrowDescription arrow
 
 using namespace std::placeholders;
 
-Resources::Resources(std::shared_ptr<const Window> window)
-    : _window(window)
+Resources::Resources(Window& window)
+    : _window(&window)
 {
     std::string tilesPath = "assets/tiles/";
 
@@ -131,13 +131,13 @@ Resources::Resources(std::shared_ptr<const Window> window)
 
         sdl::Surface surface = img::load(path);
         sdl::Texture texture = _window->createTextureFromSurface(surface);
-        _textures[texturePath.first] = texture;
+        _textures[texturePath.first] = std::move(texture);
     }
 
     _arrowBase = img::load(tilesPath + "arrow_base.png");
 }
 
-sdl::Texture Resources::texture(TextureId textureId) const
+sdl::Texture& Resources::texture(TextureId textureId)
 {
     return _textures.at(textureId);
 }
@@ -145,12 +145,16 @@ sdl::Texture Resources::texture(TextureId textureId) const
 ttf::Font Resources::font(FontId fontId, int ptSize) const
 {
     std::string fontPath = "assets/fonts/" + fontPaths.at(fontId);
-    return ttf::openFont(fontPath, ptSize);
+    return ttf::Font{fontPath, ptSize};
 }
 
-sdl::Texture Resources::arrowTexture(ArrowDescription arrows) const
+sdl::Texture& Resources::arrowTexture(ArrowDescription arrows)
 {
+    if (auto it = _arrowTextures.find(arrows); it != _arrowTextures.end()) {
+        return it->second;
+    }
+
     sdl::Surface surface = createArrowSurface(_arrowBase, arrows);
     sdl::Texture texture = _window->createTextureFromSurface(surface);
-    return texture;
+    return _arrowTextures.emplace(arrows, std::move(texture)).first->second;
 }

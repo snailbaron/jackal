@@ -10,12 +10,13 @@ Window::Window(const WindowConfiguration& windowConfig)
         windowConfig.height,
         SDL_WINDOW_RESIZABLE |
             (windowConfig.fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0))
-    , _renderer(_window.createRenderer(
+    , _renderer(
+        _window,
         -1,
-        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC))
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 { }
 
-sdl::Texture Window::createTextureFromSurface(const sdl::Surface& surface) const
+sdl::Texture Window::createTextureFromSurface(sdl::Surface& surface)
 {
     return _renderer.createTextureFromSurface(surface);
 }
@@ -53,20 +54,20 @@ void Window::drawRect(const ScreenRect& rect, const Color& color)
     _renderer.fillRect(rect.sdl());
 }
 
-void Window::drawTexture(const sdl::Texture& texture, int x, int y, int w, int h)
+void Window::drawTexture(sdl::Texture& texture, int x, int y, int w, int h)
 {
     SDL_Rect dstRect{ x, y, w, h };
     _renderer.copy(texture, nullptr, &dstRect);
 }
 
-void Window::drawTexture(const sdl::Texture& texture, ScreenRect rect)
+void Window::drawTexture(sdl::Texture& texture, ScreenRect rect)
 {
     SDL_Rect dstRect { rect.origin.x, rect.origin.y, rect.size.x, rect.size.y };
     _renderer.copy(texture, nullptr, &dstRect);
 }
 
 void Window::drawTexturePart(
-    const sdl::Texture& texture, int x, int y, int w, int h, int texX, int texY, int texW, int texH)
+    sdl::Texture& texture, int x, int y, int w, int h, int texX, int texY, int texW, int texH)
 {
     SDL_Rect dstRect { x, y, w, h };
     SDL_Rect srcRect { texX, texY, texW, texH };
@@ -74,7 +75,7 @@ void Window::drawTexturePart(
 }
 
 void Window::drawTexturePart(
-    const sdl::Texture& texture,
+    sdl::Texture& texture,
     const ScreenRect& target,
     const ScreenRect& src)
 {

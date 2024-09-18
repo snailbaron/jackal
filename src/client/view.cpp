@@ -1,7 +1,7 @@
 #include "view.hpp"
 
-View::View(std::shared_ptr<Window> window)
-    : _window(window)
+View::View(Window& window)
+    : _window(&window)
 { }
 
 void View::addGuiElement(std::shared_ptr<GuiElement> guiElement)

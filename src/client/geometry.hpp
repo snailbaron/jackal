@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basic_geometry.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 
 struct ScreenTag {};
 

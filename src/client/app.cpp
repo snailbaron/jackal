@@ -1,7 +1,7 @@
 #include "app.hpp"
 #include "gui.hpp"
 #include "client_game.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <utility>
@@ -15,7 +15,7 @@ App::App(const std::string& configFile)
     initMediaLayer();
 
     _config = readAppConfig(configFile);
-    _window = std::make_shared<Window>(_config.window);
+    _window = Window{_config.window};
     _resources = std::make_unique<Resources>(_window);
 
     _view = std::make_unique<View>(_window);
@@ -24,7 +24,6 @@ App::App(const std::string& configFile)
 App::~App()
 {
     _resources = nullptr;
-    _window = nullptr;
     killMediaLayer();
 }
 

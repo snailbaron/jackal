@@ -1,29 +1,21 @@
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include "exceptions.hpp"
 
-SdlError::SdlError(const std::string& sdlFunction)
-    : _message("SDL error in " + sdlFunction + ": " + SDL_GetError())
+#include <stacktrace>
+#include <format>
+
+Error::Error(std::string message, std::source_location sl)
+    : _message(std::format(
+        "{}:{}:{} ({}): {}\n{}\n",
+        sl.file_name(),
+        sl.line(),
+        sl.column(),
+        sl.function_name(),
+        message,
+        std::stacktrace::current()))
 { }
 
-const char* SdlError::what() const noexcept
-{
-    return _message.c_str();
-}
-
-ImgError::ImgError(const std::string& sdlImageFunction)
-    : _message("SDL_image error in " + sdlImageFunction + ": " + IMG_GetError())
-{ }
-
-const char* ImgError::what() const noexcept
-{
-    return _message.c_str();
-}
-
-TtfError::TtfError(const std::string& sdlTtfFunction)
-    : _message("SDL_ttf error in " + sdlTtfFunction + ": " + TTF_GetError())
-{ }
-
-const char* TtfError::what() const noexcept
+const char* Error::what() const noexcept
 {
     return _message.c_str();
 }

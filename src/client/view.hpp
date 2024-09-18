@@ -5,7 +5,7 @@
 #include "window.hpp"
 #include "gui_element.hpp"
 #include "field.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include <nlohmann/json.hpp>
 #include <map>
 #include <memory>
@@ -18,7 +18,7 @@ class View {
     friend class App;
 
 public:
-    View(std::shared_ptr<Window> window);
+    View(Window& window);
 
     std::shared_ptr<TTF_Font> font() { return _font; }
 
@@ -47,7 +47,7 @@ public:
 private:
     std::shared_ptr<GuiElement> guiUnderPoint(int x, int y);
 
-    std::shared_ptr<Window> _window;
+    Window* _window = nullptr;
     std::shared_ptr<TTF_Font> _font;
 
     std::vector<std::shared_ptr<GuiElement>> _guiElements;

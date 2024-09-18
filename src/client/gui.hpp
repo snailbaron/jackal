@@ -3,7 +3,7 @@
 #include "view.hpp"
 #include "gui_element.hpp"
 #include "resources.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include <string>
 #include <memory>
 #include <functional>
@@ -19,7 +19,7 @@ public:
 
     const std::string& text() const { return _text; }
     FontId fontId() const { return _fontId; }
-    sdl::Texture texture() const { return _texture; }
+    sdl::Texture& texture() { return _texture; }
     const ScreenVector& screenOffset() const { return _screenOffset; }
     const ScreenRect& textureRect() const { return _textureRect; }
 

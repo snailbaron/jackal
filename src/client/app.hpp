@@ -5,7 +5,7 @@
 #include "resources.hpp"
 #include "view.hpp"
 #include "client_game.hpp"
-#include "sdl_wrapper.hpp"
+#include "sdl.hpp"
 #include "../core/JackalGame.h"
 
 struct AppConfiguration {
@@ -23,10 +23,10 @@ public:
 
     void run();
 
-    std::shared_ptr<const Window> window() const { return _window; }
-    std::shared_ptr<Window> window() { return _window; }
+    const Window& window() const { return _window; }
+    Window& window() { return _window; }
 
-    const Resources& res() const { return *_resources; }
+    Resources& res() { return *_resources; }
     const ClientGame& game() const { return _game; }
     ClientGame& game() { return _game; }
 
@@ -40,7 +40,7 @@ private:
     void setGameField();
 
     AppConfiguration _config;
-    std::shared_ptr<Window> _window;
+    Window _window;
     std::unique_ptr<Resources> _resources;
 
     ClientGame _game;

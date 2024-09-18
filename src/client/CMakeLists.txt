@@ -14,7 +14,7 @@ add_executable(client
     log.cpp
     main.cpp
     resources.cpp
-    sdl_wrapper.cpp
+    "sdl.cpp"
     view.cpp
     window.cpp
 )

@@ -52,7 +52,7 @@ const std::map<TypeCellEnum, TextureId> cellTypeTextureIds {
     { Root, TextureId::Root },
 };
 
-sdl::Texture textureForCellType(TypeCellEnum cellType)
+sdl::Texture& textureForCellType(TypeCellEnum cellType)
 {
     if (cellType >= 256) {
         return app().res().texture(cellTypeTextureIds.at(cellType));
@@ -75,7 +75,7 @@ Field::Field()
 void Field::render(View&)
 {
     // Draw grid
-    app().window()->drawGrid(
+    app().window().drawGrid(
         _position.x, _position.y,
         FIELD_DATA_SIZE, FIELD_DATA_SIZE,
         CELL_SIZE, CELL_SIZE,
@@ -84,7 +84,7 @@ void Field::render(View&)
 
     // Mark the cell pointed to
     if (_focused) {
-        app().window()->drawRect(
+        app().window().drawRect(
             cellOuterRect(_activeCell), CELL_OUTLINE_COLOR);
     }
 
@@ -92,8 +92,8 @@ void Field::render(View&)
     for (int x = 0; x < FIELD_DATA_SIZE; x++) {
         for (int y = 0; y < FIELD_DATA_SIZE; y++) {
             TypeCellEnum cellType = app().game().cellType(x, y);
-			sdl::Texture texture = textureForCellType(cellType);
-            app().window()->drawTexture(texture, cellInnerRect({x, y}));
+			sdl::Texture& texture = textureForCellType(cellType);
+            app().window().drawTexture(texture, cellInnerRect({x, y}));
         }
     }
 
@@ -105,19 +105,19 @@ void Field::render(View&)
 
     for (const auto& i : pirateCount) {
         int playerId = i.first;
-		sdl::Texture pirateTexture;
+		sdl::Texture* pirateTexture = nullptr;
 		switch (playerId) {
 		case 0:
-			pirateTexture = app().res().texture(TextureId::PirateRed);
+			pirateTexture = &app().res().texture(TextureId::PirateRed);
 			break;
 		case 1:
-			pirateTexture = app().res().texture(TextureId::PirateGreen);
+			pirateTexture = &app().res().texture(TextureId::PirateGreen);
 			break;
 		case 2:
-			pirateTexture = app().res().texture(TextureId::PirateBlue);
+			pirateTexture = &app().res().texture(TextureId::PirateBlue);
 			break;
 		case 3:
-			pirateTexture = app().res().texture(TextureId::PirateYellow);
+			pirateTexture = &app().res().texture(TextureId::PirateYellow);
 			break;
 		}
 
@@ -127,7 +127,7 @@ void Field::render(View&)
 
             auto rects = pirateRects(pirateCell, anotherPirateCount);
             for (const auto& rect : rects) {
-                app().window()->drawTexture(pirateTexture, rect);
+                app().window().drawTexture(*pirateTexture, rect);
             }
         }
     }
@@ -135,7 +135,7 @@ void Field::render(View&)
     // Draw valid moves
     for (const auto& cell : app().game().validMoves()) {
         ScreenRect rect = cellInnerRect(cell);
-        app().window()->drawRect(rect, { 255, 0, 0, 150 });
+        app().window().drawRect(rect, { 255, 0, 0, 150 });
     }
 }
 
@@ -153,8 +153,8 @@ void Field::drag(const ScreenVector& delta)
 void Field::grabOff()
 {
     // If game field is dragged too far outside the screen, return it back.
-    int xMiddle = app().window()->width() / 2;
-    int yMiddle = app().window()->height() / 2;
+    int xMiddle = app().window().width() / 2;
+    int yMiddle = app().window().height() / 2;
 
     if (_position.x > xMiddle) {
         _position.x = xMiddle;

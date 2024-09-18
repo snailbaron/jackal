@@ -1,7 +1,8 @@
 #include "sdl.hpp"
+
 #include "exceptions.hpp"
-#include <stdexcept>
-#include <sstream>
+
+#include <format>
 
 namespace sdl {
 

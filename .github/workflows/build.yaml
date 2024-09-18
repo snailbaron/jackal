@@ -1,0 +1,18 @@
+name: Build Workflow
+on: [push]
+jobs:
+  build_matrix:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04
+          - windows-latest
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
+        with:
+          submodules: recursive
+
+      - name: Build
+        uses: threeal/cmake-action@v2.0.0

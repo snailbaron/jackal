@@ -42,17 +42,6 @@ struct FontInfo {
     int size;
 };
 
-std::shared_ptr<TTF_Font> createFont(FontId fontId, int ptSize)
-{
-    std::string path = "assets/fonts/" + fontPaths[fontId];
-
-    TTF_Font* font = TTF_OpenFont(path.c_str(), ptSize);
-
-    return std::shared_ptr<TTF_Font>(
-        font,
-        TTF_CloseFont);
-}
-
 // TODO: Move to some drawing wrapper over SDL wrapper?
 // (wrapper in wrapper!)
 void drawPixel(

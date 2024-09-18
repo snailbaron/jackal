@@ -9,12 +9,13 @@ add_executable(client
     client_game.cpp
     exceptions.cpp
     field.cpp
+    fs.cpp
     geometry.cpp
     gui.cpp
     log.cpp
     main.cpp
     resources.cpp
-    "sdl.cpp"
+    sdl.cpp
     view.cpp
     window.cpp
 )

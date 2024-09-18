@@ -26,6 +26,7 @@ void check(int returnValue)
 } // namespace
 
 Surface::Surface(const Surface& other)
+    : sdl::internal::Holder<SDL_Surface, SDL_FreeSurface>(nullptr)
 {
     _ptr.reset(check(SDL_ConvertSurface(other._ptr.get(), other->format, 0)));
 }
@@ -117,18 +118,11 @@ T* check(T* ptr)
     return ptr;
 }
 
-void check(int returnValue)
-{
-    if (returnValue != 0) {
-        throw Error{std::format("SDL_image: {}", IMG_GetError())};
-    }
-}
-
 } // namespace
 
 sdl::Surface load(const std::string& file)
 {
-    return sdl::Surface(check(IMG_Load(file.c_str())));
+    return sdl::Surface{check(IMG_Load(file.c_str()))};
 }
 
 } // namespace img

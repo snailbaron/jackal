@@ -52,7 +52,7 @@ protected:
     std::unique_ptr<T, void(*)(T*)> _ptr{nullptr, deleter};
 };
 
-} // namespace
+} // namespace internal
 
 class Surface : public internal::Holder<SDL_Surface, SDL_FreeSurface> {
 public:

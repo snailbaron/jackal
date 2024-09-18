@@ -8,11 +8,6 @@ ClientGame::Cell cellFromPoint(const Point& point)
     return {point.x - 2, point.y - 2};
 }
 
-ClientGame::Position positionFromPoint(const Point& point)
-{
-    return {cellFromPoint(point), point.z};
-}
-
 Point makePoint(const ClientGame::Cell& cell, int depth)
 {
     return {cell.x + 2, cell.y + 2, depth};

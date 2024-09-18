@@ -2,19 +2,16 @@
 #include "gui.hpp"
 #include "client_game.hpp"
 #include "sdl.hpp"
-#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <utility>
 #include <fstream>
 
-using Json = nlohmann::json;
-
-App::App(const std::string& configFile)
+App::App(const std::filesystem::path& configFile)
     : _game(std::make_shared<JackalGame>())
 {
     initMediaLayer();
 
-    _config = readAppConfig(configFile);
+    _config = loadConfig(configFile);
     _window = Window{_config.window};
     _resources = std::make_unique<Resources>(_window);
 
@@ -80,29 +77,6 @@ void App::killMediaLayer()
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
-}
-
-AppConfiguration App::readAppConfig(const std::string& configFile)
-{
-    std::ifstream configStream(configFile);
-    if (!configStream.is_open()) {
-        throw std::runtime_error(
-            "Failed to read app configuration file: " + configFile);
-    }
-
-    Json json;
-    configStream >> json;
-
-    // TODO: Do the stuff below in a try-catch block, to fall back to default
-    // configuration if the one being read is corrupted. Maybe rewrite the file
-    // with default data, in whole or corrupted parts only.
-
-    AppConfiguration config;
-    config.window.title = json["window"]["title"].get<std::string>();
-    config.window.width = json["window"]["width"];
-    config.window.height = json["window"]["height"];
-    config.window.fullscreen = json["window"]["fullscreen"];
-    return config;
 }
 
 void App::setMainMenu()

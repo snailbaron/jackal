@@ -32,4 +32,9 @@ std::filesystem::path exePath()
 #endif
 }
 
+std::filesystem::path exeDir()
+{
+    return exePath().parent_path();
+}
+
 } // namespace fs

@@ -6,13 +6,10 @@
 #include "gui_element.hpp"
 #include "field.hpp"
 #include "sdl.hpp"
-#include <nlohmann/json.hpp>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
-
-using nlohmann::json;
 
 class View {
     friend class App;

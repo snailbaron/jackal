@@ -1,24 +1,12 @@
 #pragma once
 
+#include "config.hpp"
 #include "geometry.hpp"
 #include "sdl.hpp"
 #include <memory>
 #include <string>
 #include <tuple>
 #include <iterator>
-
-/**
-* Parameters of the game window.
-*
-* Can be loaded from JSON configuration file.
-*/
-struct WindowConfiguration {
-    std::string title = "Jackal";
-    int width = 800;
-    int height = 600;
-    bool fullscreen = false;
-};
-
 
 /**
 * Color type used in configuration.
@@ -72,7 +60,7 @@ struct Color {
 class Window {
 public:
     Window() {}
-    Window(const WindowConfiguration& windowConfig);
+    Window(const Config::Window& windowConfig);
 
     sdl::Texture createTextureFromSurface(sdl::Surface& surface);
 

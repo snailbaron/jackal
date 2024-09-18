@@ -19,7 +19,11 @@ set(SDL2IMAGE_XV OFF)
 set(SDL2IMAGE_VENDORED TRUE)
 set(SDL2TTF_VENDORED TRUE)
 
-add_subdirectory(json)
+# yaml-cpp's messy use of dllexport causes MSVC to freak out (C4251). Always
+# link it statically.
+set(YAML_BUILD_SHARED_LIBS FALSE)
+
 add_subdirectory(SDL)
 add_subdirectory(SDL_image)
 add_subdirectory(SDL_ttf)
+add_subdirectory(yaml-cpp)

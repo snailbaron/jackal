@@ -1,0 +1,9 @@
+window:
+    title: Jackal
+    width: 1200
+    height: 900
+    fullscreen: true
+field:
+    background_color: [200, 200, 200]
+    grid_color: [100, 100, 100]
+    grid_width: 3

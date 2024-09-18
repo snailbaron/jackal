@@ -7,6 +7,7 @@ endif()
 add_executable(client
     app.cpp
     client_game.cpp
+    config.cpp
     exceptions.cpp
     field.cpp
     fs.cpp
@@ -22,18 +23,32 @@ add_executable(client
 target_link_libraries(client PRIVATE
     core
 
-    nlohmann_json::nlohmann_json
+    yaml-cpp::yaml-cpp
     SDL2::SDL2
     SDL2::SDL2main
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
 )
 
-add_custom_command(TARGET client POST_BUILD
+add_custom_command(
+    COMMENT "copy jackal.yaml custom command"
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/jackal.yaml
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/jackal.yaml
     COMMAND ${CMAKE_COMMAND} -E copy
-        -t $<TARGET_FILE_DIR:client>
-            $<TARGET_RUNTIME_DLLS:client>
-            "${CMAKE_CURRENT_SOURCE_DIR}/jackal.json"
+        ${CMAKE_CURRENT_SOURCE_DIR}/jackal.yaml
+        ${CMAKE_CURRENT_BINARY_DIR}/jackal.yaml
+)
+add_custom_target(
+    copy-jackal-config
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/jackal.yaml
+)
+add_dependencies(client copy-jackal-config)
+
+add_custom_command(TARGET client POST_BUILD
+    #COMMAND ${CMAKE_COMMAND} -E copy
+    #    -t $<TARGET_FILE_DIR:client>
+    #        $<TARGET_RUNTIME_DLLS:client>
+    #        "${CMAKE_CURRENT_SOURCE_DIR}/jackal.yaml"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_SOURCE_DIR}/assets"
         "$<TARGET_FILE_DIR:client>/assets"

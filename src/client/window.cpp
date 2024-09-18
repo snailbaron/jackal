@@ -1,7 +1,7 @@
 #include "window.hpp"
 #include <utility>
 
-Window::Window(const WindowConfiguration& windowConfig)
+Window::Window(const Config::Window& windowConfig)
     : _window(
         windowConfig.title,
         SDL_WINDOWPOS_UNDEFINED,

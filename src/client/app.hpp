@@ -1,24 +1,23 @@
 #pragma once
 
-#include "singleton.hpp"
-#include "window.hpp"
-#include "resources.hpp"
-#include "view.hpp"
 #include "client_game.hpp"
+#include "config.hpp"
+#include "resources.hpp"
 #include "sdl.hpp"
+#include "singleton.hpp"
+#include "view.hpp"
+#include "window.hpp"
+
 #include "../core/JackalGame.h"
 
-struct AppConfiguration {
-    WindowConfiguration window;
-    int numberOfPlayers = 4;
-};
+#include <filesystem>
 
 /**
  * Class representing the whole application.
  */
 class App : public Singleton<App> {
 public:
-    App(const std::string& configFile);
+    App(const std::filesystem::path& configFile);
     ~App();
 
     void run();
@@ -33,13 +32,12 @@ public:
 private:
     void initMediaLayer();
     void killMediaLayer();
-    AppConfiguration readAppConfig(const std::string& configFile);
 
     void setMainMenu();
     void setOptionsMenu();
     void setGameField();
 
-    AppConfiguration _config;
+    Config _config;
     Window _window;
     std::unique_ptr<Resources> _resources;
 

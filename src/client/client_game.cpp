@@ -1,4 +1,5 @@
 #include "client_game.hpp"
+
 #include <cassert>
 
 namespace {
@@ -15,78 +16,10 @@ Point makePoint(const ClientGame::Cell& cell, int depth)
 
 } // namespace
 
-/**
- * ClientGame::Cell operations
- */
-
-bool operator==(const ClientGame::Cell& left, const ClientGame::Cell& right)
-{
-    return std::tie(left.x, left.y) == std::tie(right.x, right.y);
-}
-
-bool operator!=(const ClientGame::Cell& left, const ClientGame::Cell& right)
-{
-    return !(left == right);
-}
-
-bool operator<(const ClientGame::Cell& left, const ClientGame::Cell& right)
-{
-    return std::tie(left.x, left.y) < std::tie(right.x, right.y);
-}
-
-bool operator>(const ClientGame::Cell& left, const ClientGame::Cell& right)
-{
-    return right < left;
-}
-
-bool operator<=(const ClientGame::Cell& left, const ClientGame::Cell& right)
-{
-    return left < right || left == right;
-}
-
-bool operator>=(const ClientGame::Cell& left, const ClientGame::Cell& right)
-{
-    return right <= left;
-}
-
 std::ostream& operator<<(std::ostream& os, const ClientGame::Cell& cell)
 {
     os << "(" << cell.x << ", " << cell.y << ")";
     return os;
-}
-
-/**
- * ClientGame::Position operations
- */
-
-bool operator==(const ClientGame::Position& left, const ClientGame::Position& right)
-{
-    return std::tie(left.cell, left.depth) == std::tie(right.cell, right.depth);
-}
-
-bool operator!=(const ClientGame::Position& left, const ClientGame::Position& right)
-{
-    return !(left == right);
-}
-
-bool operator<(const ClientGame::Position& left, const ClientGame::Position& right)
-{
-    return std::tie(left.cell, left.depth) < std::tie(right.cell, right.depth);
-}
-
-bool operator>(const ClientGame::Position& left, const ClientGame::Position& right)
-{
-    return right < left;
-}
-
-bool operator<=(const ClientGame::Position& left, const ClientGame::Position& right)
-{
-    return left < right || left == right;
-}
-
-bool operator>=(const ClientGame::Position& left, const ClientGame::Position& right)
-{
-    return right <= left;
 }
 
 std::ostream& operator<<(std::ostream& os, const ClientGame::Position& position)
@@ -95,26 +28,6 @@ std::ostream& operator<<(std::ostream& os, const ClientGame::Position& position)
         position.depth << ")";
     return os;
 }
-
-/**
- * Game parameters
- */
-
-const int ClientGame::FieldSize = 13;
-
-/**
- * ClientGame::State
- */
-
-enum class ClientGame::State {
-    SelectSubject,
-    ClarifySubject,
-    SelectTarget,
-};
-
-/**
- * ClientGame
- */
 
 ClientGame::ClientGame(std::shared_ptr<JackalGame> game)
     : _game(game)

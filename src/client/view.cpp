@@ -9,12 +9,6 @@ void View::addGuiElement(std::shared_ptr<GuiElement> guiElement)
     _guiElements.push_back(guiElement);
 }
 
-std::shared_ptr<GuiElement> View::createScene()
-{
-    return std::shared_ptr<GuiElement>(
-        new Field());
-}
-
 void View::clear()
 {
     _guiElements.clear();
@@ -26,9 +20,6 @@ void View::render()
 
     for (auto& gui : _guiElements) {
         gui->render(*this);
-    }
-    if (_scene) {
-        _scene->render(*this);
     }
 
     _window->present();

@@ -2,9 +2,10 @@
 
 #include "window.hpp"
 #include "sdl.hpp"
-#include <memory>
-#include <map>
+
 #include <array>
+#include <map>
+#include <memory>
 
 enum class TextureId {
     // Game field tiles
@@ -42,14 +43,15 @@ using ArrowDescription = std::array<bool, 8>;
 
 class Resources {
 public:
-    Resources(Window& window);
+    Resources() = default;
+    explicit Resources(sdl::Renderer& renderer);
 
     sdl::Texture& texture(TextureId textureId);
     ttf::Font font(FontId fontId, int ptSize) const;
     sdl::Texture& arrowTexture(ArrowDescription arrows);
 
 private:
-    Window* _window = nullptr;
+    sdl::Renderer* _renderer = nullptr;
     std::map<TextureId, sdl::Texture> _textures;
     sdl::Surface _arrowBase;
     std::map<ArrowDescription, sdl::Texture> _arrowTextures;

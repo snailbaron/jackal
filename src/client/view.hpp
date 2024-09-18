@@ -28,8 +28,6 @@ public:
             new T(std::forward<Args>(args)...)));
     }
 
-    std::shared_ptr<GuiElement> createScene();
-
     void clear();
 
     void render();
@@ -51,6 +49,4 @@ private:
     std::shared_ptr<GuiElement> _focusedGuiElement = nullptr;
     std::shared_ptr<GuiElement> _pressedGuiElement = nullptr;
     std::shared_ptr<GuiElement> _grabbedGuiElement = nullptr;
-
-    std::unique_ptr<Field> _scene;
 };

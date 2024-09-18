@@ -6,7 +6,7 @@ class View;
 
 class GuiElement {
 public:
-    virtual ~GuiElement() {}
+    virtual ~GuiElement() = default;
 
     virtual bool contains(const ScreenVector& point) = 0;
     virtual void render(View& view) = 0;

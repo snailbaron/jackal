@@ -68,6 +68,9 @@ public:
     int height() const;
     ScreenVector size() const;
 
+    sdl::Window& window();
+    sdl::Renderer& renderer();
+
     //
     // Graphical primitive drawing
     //

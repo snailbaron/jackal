@@ -1,7 +1,10 @@
 #include "resources.hpp"
-#include <string>
-#include <functional>
+
+#include "fs.hpp"
+
 #include <cmath>
+#include <functional>
+#include <string>
 #include <vector>
 
 namespace {
@@ -110,20 +113,17 @@ sdl::Surface createArrowSurface(const sdl::Surface& base, ArrowDescription arrow
 
 using namespace std::placeholders;
 
-Resources::Resources(Window& window)
-    : _window(&window)
+Resources::Resources(sdl::Renderer& renderer)
+    : _renderer(&renderer)
 {
-    std::string tilesPath = "assets/tiles/";
+    auto tilesPath = fs::exeDir() / "assets" / "tiles";
 
     for (const auto& texturePath : texturePaths) {
-        std::string path = tilesPath + texturePath.second;
-
-        sdl::Surface surface = img::load(path);
-        sdl::Texture texture = _window->createTextureFromSurface(surface);
-        _textures[texturePath.first] = std::move(texture);
+        auto path = tilesPath / texturePath.second;
+        _textures[texturePath.first] = _renderer->loadTexture(path);
     }
 
-    _arrowBase = img::load(tilesPath + "arrow_base.png");
+    _arrowBase = img::load(tilesPath / "arrow_base.png");
 }
 
 sdl::Texture& Resources::texture(TextureId textureId)
@@ -144,6 +144,6 @@ sdl::Texture& Resources::arrowTexture(ArrowDescription arrows)
     }
 
     sdl::Surface surface = createArrowSurface(_arrowBase, arrows);
-    sdl::Texture texture = _window->createTextureFromSurface(surface);
+    sdl::Texture texture = _renderer->createTextureFromSurface(surface);
     return _arrowTextures.emplace(arrows, std::move(texture)).first->second;
 }

@@ -5,7 +5,6 @@
 #include <format>
 
 namespace sdl {
-
 namespace {
 
 template <class T>
@@ -25,6 +24,56 @@ void check(int returnValue)
 }
 
 } // namespace
+} // namespace sdl
+
+namespace img {
+namespace {
+
+template <class T>
+T* check(T* ptr)
+{
+    if (ptr == nullptr) {
+        throw Error{std::format("SDL_image: {}", IMG_GetError())};
+    }
+    return ptr;
+}
+
+} // namespace
+} // namespace img
+
+namespace ttf {
+namespace {
+
+template <class T>
+T* check(T* ptr)
+{
+    if (ptr == nullptr) {
+        throw Error{std::format("SDL_ttf: {}", TTF_GetError())};
+    }
+    return ptr;
+}
+
+void check(int returnValue)
+{
+    if (returnValue != 0) {
+        throw Error{std::format("SDL_ttf: {}", TTF_GetError())};
+    }
+}
+
+} // namespace
+} // namespace ttf
+
+namespace sdl {
+
+Init::Init(uint32_t flags)
+{
+    check(SDL_Init(flags));
+}
+
+Init::~Init()
+{
+    SDL_Quit();
+}
 
 Surface::Surface(const Surface& other)
     : sdl::internal::Holder<SDL_Surface, SDL_FreeSurface>(nullptr)
@@ -43,6 +92,36 @@ Surface& Surface::operator=(const Surface& other)
 void Surface::fillRect(const SDL_Rect& rect, Uint32 color)
 {
     check(SDL_FillRect(ptr(), &rect, color));
+}
+
+RWops::RWops(SDL_RWops* ptr)
+{
+    _ptr.reset(ptr);
+}
+
+RWops::RWops(const std::filesystem::path& file, const std::string& mode)
+{
+    _ptr.reset(check(SDL_RWFromFile(file.string().c_str(), mode.c_str())));
+}
+
+RWops::RWops(std::span<const std::byte> mem)
+{
+    _ptr.reset(check(SDL_RWFromConstMem(mem.data(), (int)mem.size())));
+}
+
+RWops::RWops(std::span<std::byte> mem)
+{
+    _ptr.reset(check(SDL_RWFromMem(mem.data(), (int)mem.size())));
+}
+
+SDL_RWops* RWops::ptr()
+{
+    return _ptr.get();
+}
+
+const SDL_RWops* RWops::ptr() const
+{
+    return _ptr.get();
 }
 
 Window::Window(
@@ -74,6 +153,17 @@ Texture Renderer::createTextureFromSurface(Surface& surface)
 {
     return Texture{check(
         SDL_CreateTextureFromSurface(ptr(), surface.ptr()))};
+}
+
+Texture Renderer::loadTexture(const std::filesystem::path& file)
+{
+    return Texture{img::check(IMG_LoadTexture(ptr(), file.string().c_str()))};
+}
+
+Texture Renderer::loadTexture(std::span<const std::byte> mem)
+{
+    auto rw = RWops{mem};
+    return Texture{img::check(IMG_LoadTexture_RW(ptr(), rw.ptr(), 0))};
 }
 
 void Renderer::setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
@@ -108,47 +198,36 @@ void Renderer::copy(
 
 namespace img {
 
-namespace {
-
-template <class T>
-T* check(T* ptr)
+Init::Init(int flags)
 {
-    if (ptr == nullptr) {
+    if (IMG_Init(flags) != flags) {
         throw Error{std::format("SDL_image: {}", IMG_GetError())};
     }
-    return ptr;
 }
 
-} // namespace
-
-sdl::Surface load(const std::string& file)
+Init::~Init()
 {
-    return sdl::Surface{check(IMG_Load(file.c_str()))};
+    IMG_Quit();
+}
+
+sdl::Surface load(const std::filesystem::path& file)
+{
+    return sdl::Surface{check(IMG_Load(file.string().c_str()))};
 }
 
 } // namespace img
 
 namespace ttf {
 
-namespace {
-
-template <class T>
-T* check(T* ptr)
+Init::Init()
 {
-    if (ptr == nullptr) {
-        throw Error{std::format("SDL_ttf: {}", TTF_GetError())};
-    }
-    return ptr;
+    check(TTF_Init());
 }
 
-void check(int returnValue)
+Init::~Init()
 {
-    if (returnValue != 0) {
-        throw Error{std::format("SDL_ttf: {}", TTF_GetError())};
-    }
+    TTF_Quit();
 }
-
-} // namespace
 
 Font::Font(const std::filesystem::path& path, int ptsize)
 {

@@ -36,6 +36,16 @@ ScreenVector Window::size() const
     return { _window.size().w, _window.size().h };
 }
 
+sdl::Window& Window::window()
+{
+    return _window;
+}
+
+sdl::Renderer& Window::renderer()
+{
+    return _renderer;
+}
+
 void Window::clear(const Color& color)
 {
     setColor(color);

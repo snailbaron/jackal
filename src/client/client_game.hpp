@@ -2,6 +2,7 @@
 
 #include "../core/JackalGame.h"
 #include "../core/GameState.h"
+
 #include <memory>
 #include <map>
 #include <set>
@@ -9,20 +10,24 @@
 
 class ClientGame {
 public:
-    static const int FieldSize;
+    static constexpr int FieldSize = 13;
 
     struct Cell {
-        int x;
-        int y;
+        int x = 0;
+        int y = 0;
+
+        constexpr auto operator<=>(const Cell&) const = default;
     };
 
     struct Position {
         Cell cell;
         int depth;
+
+        constexpr auto operator<=>(const Position&) const = default;
     };
 
     ClientGame(std::shared_ptr<JackalGame> game);
-    
+
     const GameState& coreState() const;
     int activePlayer() const;
     TypeCellEnum cellType(int x, int y) const;
@@ -33,14 +38,18 @@ public:
     void update();
 
 private:
-    enum class State;
+    enum class State {
+        SelectSubject,
+        ClarifySubject,
+        SelectTarget,
+    };
 
     std::shared_ptr<JackalGame> _game;
     GameState _coreState;
 
     State _state;
 
-    int _movingPirate;
+    int _movingPirate = 0;
     std::map<Cell, int> _validMoves;
     std::vector<Position> _moveCandidates;
 
@@ -50,20 +59,5 @@ private:
 
 ClientGame::Cell pirateCell(const Pirate& pirate);
 
-bool operator==(const ClientGame::Cell& left, const ClientGame::Cell& right);
-bool operator!=(const ClientGame::Cell& left, const ClientGame::Cell& right);
-bool operator<(const ClientGame::Cell& left, const ClientGame::Cell& right);
-bool operator>(const ClientGame::Cell& left, const ClientGame::Cell& right);
-bool operator<=(const ClientGame::Cell& left, const ClientGame::Cell& right);
-bool operator>=(const ClientGame::Cell& left, const ClientGame::Cell& right);
-
 std::ostream& operator<<(std::ostream& os, const ClientGame::Cell& cell);
-
-bool operator==(const ClientGame::Position& left, const ClientGame::Position& right);
-bool operator!=(const ClientGame::Position& left, const ClientGame::Position& right);
-bool operator<(const ClientGame::Position& left, const ClientGame::Position& right);
-bool operator>(const ClientGame::Position& left, const ClientGame::Position& right);
-bool operator<=(const ClientGame::Position& left, const ClientGame::Position& right);
-bool operator>=(const ClientGame::Position& left, const ClientGame::Position& right);
-
 std::ostream& operator<<(std::ostream& os, const ClientGame::Position& position);

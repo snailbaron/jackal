@@ -4,9 +4,11 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
+#include <span>
 #include <string>
 
 namespace sdl {
@@ -54,6 +56,17 @@ protected:
 
 } // namespace internal
 
+class Init {
+public:
+    explicit Init(uint32_t flags);
+    ~Init();
+
+    Init(const Init&) = delete;
+    Init(Init&&) = delete;
+    Init& operator=(const Init&) = delete;
+    Init& operator=(Init&&) = delete;
+};
+
 class Surface : public internal::Holder<SDL_Surface, SDL_FreeSurface> {
 public:
     using internal::Holder<SDL_Surface, SDL_FreeSurface>::Holder;
@@ -67,6 +80,21 @@ public:
 class Texture : public internal::Holder<SDL_Texture, SDL_DestroyTexture> {
 public:
     using internal::Holder<SDL_Texture, SDL_DestroyTexture>::Holder;
+};
+
+class RWops {
+public:
+    RWops() = default;
+    explicit RWops(SDL_RWops* ptr);
+    RWops(const std::filesystem::path& file, const std::string& mode);
+    RWops(std::span<const std::byte> mem);
+    RWops(std::span<std::byte> mem);
+
+    SDL_RWops* ptr();
+    const SDL_RWops* ptr() const;
+
+private:
+    std::unique_ptr<SDL_RWops, int(*)(SDL_RWops*)> _ptr{nullptr, SDL_RWclose};
 };
 
 class Window : public internal::Holder<SDL_Window, SDL_DestroyWindow> {
@@ -89,6 +117,9 @@ public:
 
     Texture createTextureFromSurface(Surface& surface);
 
+    Texture loadTexture(const std::filesystem::path& file);
+    Texture loadTexture(std::span<const std::byte> mem);
+
     void setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void clear();
     void present();
@@ -104,11 +135,33 @@ public:
 
 namespace img {
 
-sdl::Surface load(const std::string& file);
+class Init {
+public:
+    explicit Init(int flags);
+    ~Init();
+
+    Init(const Init&) = delete;
+    Init(Init&&) = delete;
+    Init& operator=(const Init&) = delete;
+    Init& operator=(Init&&) = delete;
+};
+
+sdl::Surface load(const std::filesystem::path& file);
 
 } // namespace img
 
 namespace ttf {
+
+class Init {
+public:
+    Init();
+    ~Init();
+
+    Init(const Init&) = delete;
+    Init(Init&&) = delete;
+    Init& operator=(const Init&) = delete;
+    Init& operator=(Init&&) = delete;
+};
 
 class Font : public sdl::internal::Holder<TTF_Font, TTF_CloseFont> {
 public:

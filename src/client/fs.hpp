@@ -4,6 +4,6 @@
 
 namespace fs {
 
-std::filesystem::path exeDir();
+std::filesystem::path exePath();
 
 } // namespace fs

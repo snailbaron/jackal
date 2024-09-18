@@ -6,11 +6,14 @@
     #include <linux/limits.h>
     #include <unistd.h>
 #elif defined(_WIN32)
+    #include <Windows.h>
 #endif
+
+#include <format>
 
 namespace fs {
 
-std::filesystem::path exeDir()
+std::filesystem::path exePath()
 {
 #if defined(__linux__)
     auto path = std::string(PATH_MAX, '\0');
@@ -19,6 +22,13 @@ std::filesystem::path exeDir()
     }
     return path;
 #elif defined(_WIN32)
+    // TODO: do something with the path length
+    auto path = std::string(5000, '\0');
+    if (GetModuleFileNameA(NULL, path.data(), (DWORD)path.length()) == 0) {
+        throw Error{std::format(
+            "failed to GetModuleNameA: {}", GetLastError())};
+    }
+    return path;
 #endif
 }
 

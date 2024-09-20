@@ -29,27 +29,27 @@ const int CELL_DELTA = GRID_WIDTH + CELL_SIZE;
 const int FIELD_SIZE = CELL_DELTA * FIELD_DATA_SIZE + GRID_WIDTH;
 
 
-const std::map<TypeCellEnum, TextureId> cellTypeTextureIds {
-    { Horse, TextureId::Horse },
-    { Ice, TextureId::Ice },
-    { Cannibal, TextureId::Cannibal },
-    { Fort, TextureId::Fort },
-    { NativeWoman, TextureId::NativeWoman },
-    { Pitfall, TextureId::Pitfall },
-    { Rum, TextureId::Rum },
-    { Crocodile, TextureId::Crocodile },
-    { DifficultTerrain, TextureId::DifficultTerrain },
-    { Treasure, TextureId::Treasure },
-    { CannonUp, TextureId::CannonUp },
-    { CannonLeft, TextureId::CannonLeft },
-    { CannonRight, TextureId::CannonRight },
-    { CannonDown, TextureId::CannonDown },
-    { Baloon, TextureId::Baloon },
-    { Airplane, TextureId::Airplane },
-    { Grass, TextureId::Grass },
-    { Closed, TextureId::Closed },
-    { Water, TextureId::Water },
-    { Root, TextureId::Root },
+const std::map<TypeCellEnum, r::Sprite> cellTypeTextureIds {
+    { Horse, r::Sprite::Horse },
+    { Ice, r::Sprite::Ice },
+    { Cannibal, r::Sprite::Cannibal },
+    { Fort, r::Sprite::Fort },
+    { NativeWoman, r::Sprite::NativeWoman },
+    { Pitfall, r::Sprite::Pitfall },
+    { Rum, r::Sprite::Rum },
+    { Crocodile, r::Sprite::Crocodile },
+    { DifficultTerrain, r::Sprite::DifficultTerrain },
+    { Treasure, r::Sprite::Treasure },
+    { CannonUp, r::Sprite::CannonUp },
+    { CannonLeft, r::Sprite::CannonLeft },
+    { CannonRight, r::Sprite::CannonRight },
+    { CannonDown, r::Sprite::CannonDown },
+    { Baloon, r::Sprite::Baloon },
+    { Airplane, r::Sprite::Airplane },
+    { Grass, r::Sprite::Grass },
+    { Closed, r::Sprite::Closed },
+    { Water, r::Sprite::Water },
+    { Root, r::Sprite::Root },
 };
 
 sdl::Texture& textureForCellType(TypeCellEnum cellType)
@@ -108,16 +108,16 @@ void Field::render(View&)
 		sdl::Texture* pirateTexture = nullptr;
 		switch (playerId) {
 		case 0:
-			pirateTexture = &app().res().texture(TextureId::PirateRed);
+			pirateTexture = &app().res().texture(r::Sprite::PirateRed);
 			break;
 		case 1:
-			pirateTexture = &app().res().texture(TextureId::PirateGreen);
+			pirateTexture = &app().res().texture(r::Sprite::PirateGreen);
 			break;
 		case 2:
-			pirateTexture = &app().res().texture(TextureId::PirateBlue);
+			pirateTexture = &app().res().texture(r::Sprite::PirateBlue);
 			break;
 		case 3:
-			pirateTexture = &app().res().texture(TextureId::PirateYellow);
+			pirateTexture = &app().res().texture(r::Sprite::PirateYellow);
 			break;
 		}
 

@@ -1,4 +1,4 @@
-add_library(core
+add_library(core STATIC
     Cell.cpp
     ChangeMap.cpp
     GameState.cpp

@@ -10,3 +10,9 @@
 [submodule "deps/yaml-cpp"]
 	path = deps/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "deps/arg"]
+	path = deps/arg
+	url = https://github.com/snailbaron/arg.git
+[submodule "deps/flatbuffers"]
+	path = deps/flatbuffers
+	url = https://github.com/google/flatbuffers.git

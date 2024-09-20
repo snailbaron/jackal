@@ -11,7 +11,7 @@ App::App(const std::filesystem::path& configFile)
 {
     _config = loadConfig(configFile);
     _window = Window{_config.window};
-    _resources = Resources{_window.renderer()};
+    _resources = Resources{x::exeDir() / "jackal.data", _window.renderer()};
 
     _view = std::make_unique<View>(_window);
 }

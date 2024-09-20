@@ -1,6 +1,6 @@
 #include "sdl.hpp"
 
-#include "exceptions.hpp"
+#include <x.hpp>
 
 #include <format>
 
@@ -11,7 +11,7 @@ template <class T>
 T* check(T* ptr)
 {
     if (ptr == nullptr) {
-        throw Error{std::format("SDL: {}", SDL_GetError())};
+        throw x::Error{std::format("SDL: {}", SDL_GetError())};
     }
     return ptr;
 }
@@ -19,7 +19,7 @@ T* check(T* ptr)
 void check(int returnValue)
 {
     if (returnValue != 0) {
-        throw Error{std::format("SDL: {}", SDL_GetError())};
+        throw x::Error{std::format("SDL: {}", SDL_GetError())};
     }
 }
 
@@ -33,7 +33,7 @@ template <class T>
 T* check(T* ptr)
 {
     if (ptr == nullptr) {
-        throw Error{std::format("SDL_image: {}", IMG_GetError())};
+        throw x::Error{std::format("SDL_image: {}", IMG_GetError())};
     }
     return ptr;
 }
@@ -48,7 +48,7 @@ template <class T>
 T* check(T* ptr)
 {
     if (ptr == nullptr) {
-        throw Error{std::format("SDL_ttf: {}", TTF_GetError())};
+        throw x::Error{std::format("SDL_ttf: {}", TTF_GetError())};
     }
     return ptr;
 }
@@ -56,7 +56,7 @@ T* check(T* ptr)
 void check(int returnValue)
 {
     if (returnValue != 0) {
-        throw Error{std::format("SDL_ttf: {}", TTF_GetError())};
+        throw x::Error{std::format("SDL_ttf: {}", TTF_GetError())};
     }
 }
 
@@ -201,7 +201,7 @@ namespace img {
 Init::Init(int flags)
 {
     if (IMG_Init(flags) != flags) {
-        throw Error{std::format("SDL_image: {}", IMG_GetError())};
+        throw x::Error{std::format("SDL_image: {}", IMG_GetError())};
     }
 }
 
@@ -213,6 +213,12 @@ Init::~Init()
 sdl::Surface load(const std::filesystem::path& file)
 {
     return sdl::Surface{check(IMG_Load(file.string().c_str()))};
+}
+
+sdl::Surface load(std::span<const std::byte> mem)
+{
+    auto rw = sdl::RWops{mem};
+    return sdl::Surface{check(IMG_Load_RW(rw.ptr(), 0))};
 }
 
 } // namespace img
@@ -232,6 +238,15 @@ Init::~Init()
 Font::Font(const std::filesystem::path& path, int ptsize)
 {
     _ptr.reset(check(TTF_OpenFont(path.string().c_str(), ptsize)));
+}
+
+Font::Font(std::span<const std::byte> mem, int ptsize)
+{
+    // SDL_RWops needs to stay alive until the font is closed. The simplest way
+    // to achieve that is to utilize SDL's built-in cleanup mechanism, the
+    // freesrc of TTF_OpenFontRW.
+    SDL_RWops* rwops = check(SDL_RWFromConstMem(mem.data(), (int)mem.size()));
+    _ptr.reset(check(TTF_OpenFontRW(rwops, 1, ptsize)));
 }
 
 Font::Size Font::sizeUtf8(const std::string& text)

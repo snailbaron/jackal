@@ -147,6 +147,7 @@ public:
 };
 
 sdl::Surface load(const std::filesystem::path& file);
+sdl::Surface load(std::span<const std::byte> mem);
 
 } // namespace img
 
@@ -171,6 +172,7 @@ public:
     };
 
     Font(const std::filesystem::path& path, int ptsize);
+    Font(std::span<const std::byte> mem, int ptsize);
 
     Size sizeUtf8(const std::string& text);
 

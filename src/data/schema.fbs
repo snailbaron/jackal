@@ -1,0 +1,20 @@
+file_identifier "JCKL";
+
+namespace fb;
+
+table Sprite {
+  name:string;
+  data:[uint8];
+}
+
+table Font {
+  name:string;
+  data:[uint8];
+}
+
+table Data {
+  sprites:[Sprite];
+  fonts:[Font];
+}
+
+root_type Data;

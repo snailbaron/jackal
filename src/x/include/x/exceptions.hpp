@@ -5,6 +5,8 @@
 #include <string>
 #include <string_view>
 
+namespace x {
+
 class Error : public std::exception {
 public:
     explicit Error(
@@ -16,3 +18,5 @@ public:
 private:
     std::string _message;
 };
+
+} // namespace x

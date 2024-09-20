@@ -13,13 +13,13 @@ const Color ACTIVE_FRAME_COLOR{ 255, 160, 30 };
 const float RELATIVE_FRAME_WIDTH{ 0.1f };
 const float RELATIVE_TEXT_MARGIN{ 0.1f };
 const Color TEXT_COLOR{ 0, 0, 0 };
-const FontId FONT{ FontId::FyodorBold };
+const r::Font FONT{r::Font::FyodorBold };
 
 } // namespace
 
 WrittenText::WrittenText(
         std::string text,
-        FontId fontId,
+        r::Font fontId,
         const Color& textColor,
         const ScreenVector& size)
     : _text(text)

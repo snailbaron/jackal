@@ -4,6 +4,7 @@
 #include "gui_element.hpp"
 #include "resources.hpp"
 #include "sdl.hpp"
+
 #include <string>
 #include <memory>
 #include <functional>
@@ -13,12 +14,12 @@ class WrittenText {
 public:
     WrittenText(
         std::string text,
-        FontId fontId,
+        r::Font fontId,
         const Color& textColor,
         const ScreenVector& size);
 
     const std::string& text() const { return _text; }
-    FontId fontId() const { return _fontId; }
+    r::Font fontId() const { return _fontId; }
     sdl::Texture& texture() { return _texture; }
     const ScreenVector& screenOffset() const { return _screenOffset; }
     const ScreenRect& textureRect() const { return _textureRect; }
@@ -27,7 +28,7 @@ public:
 
 private:
     std::string _text;
-    FontId _fontId;
+    r::Font _fontId;
     Color _textColor;
     sdl::Texture _texture;
     ScreenVector _screenOffset;

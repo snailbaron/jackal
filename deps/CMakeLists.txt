@@ -23,7 +23,10 @@ set(SDL2TTF_VENDORED TRUE)
 # link it statically.
 set(YAML_BUILD_SHARED_LIBS FALSE)
 
+add_subdirectory(flatbuffers)
 add_subdirectory(SDL)
 add_subdirectory(SDL_image)
 add_subdirectory(SDL_ttf)
 add_subdirectory(yaml-cpp)
+
+add_subdirectory(arg)

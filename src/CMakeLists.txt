@@ -6,3 +6,6 @@ endif()
 
 add_subdirectory(client)
 add_subdirectory(core)
+add_subdirectory(data)
+add_subdirectory(pack)
+add_subdirectory(x)

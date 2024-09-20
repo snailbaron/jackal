@@ -1,49 +1,15 @@
 #include "resources.hpp"
 
-#include "fs.hpp"
-
 #include <cmath>
 #include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include <algorithm>
+#include <iostream>
+
 namespace {
-
-std::map<TextureId, std::string> texturePaths {
-    { TextureId::Airplane,         "airplane.png" },
-    { TextureId::Baloon,           "baloon.png" },
-    { TextureId::Cannibal,         "cannibal.png" },
-    { TextureId::CannonDown,       "cannon_down.png" },
-    { TextureId::CannonLeft,       "cannon_left.png" },
-    { TextureId::CannonRight,      "cannon_right.png" },
-    { TextureId::CannonUp,         "cannon_up.png" },
-    { TextureId::Closed,           "closed.png" },
-    { TextureId::Crocodile,        "crocodile.png" },
-    { TextureId::DifficultTerrain, "difficult_terrain.png" },
-    { TextureId::Fort,             "fort.png" },
-    { TextureId::Grass,            "grass.png" },
-    { TextureId::Horse,            "horse.png" },
-    { TextureId::Ice,              "ice.png" },
-    { TextureId::NativeWoman,      "native_woman.png" },
-    { TextureId::PirateRed,        "pirate_red.png" },
-	{ TextureId::PirateGreen,      "pirate_green.png" },
-	{ TextureId::PirateBlue,       "pirate_blue.png" },
-	{ TextureId::PirateYellow,     "pirate_yellow.png" },
-    { TextureId::Pitfall,          "pitfall.png" },
-    { TextureId::Root,             "root.png" },
-    { TextureId::Rum,              "rum.png" },
-    { TextureId::Treasure,         "treasure.png" },
-    { TextureId::Water,            "water.png" },
-};
-
-std::map<FontId, std::string> fontPaths {
-    { FontId::FyodorBold, "fyodor/truetype/Fyodor-Bold.ttf" },
-};
-
-struct FontInfo {
-    FontId id;
-    int size;
-};
 
 // TODO: Move to some drawing wrapper over SDL wrapper?
 // (wrapper in wrapper!)
@@ -111,30 +77,41 @@ sdl::Surface createArrowSurface(const sdl::Surface& base, ArrowDescription arrow
 
 } // namespace
 
-using namespace std::placeholders;
-
-Resources::Resources(sdl::Renderer& renderer)
-    : _renderer(&renderer)
+Resources::Resources(const std::filesystem::path& path, sdl::Renderer& renderer)
+    : _mmap(path)
+    , _fbData(fb::GetData(_mmap.addr()))
+    , _renderer(&renderer)
 {
-    auto tilesPath = fs::exeDir() / "assets" / "tiles";
-
-    for (const auto& texturePath : texturePaths) {
-        auto path = tilesPath / texturePath.second;
-        _textures[texturePath.first] = _renderer->loadTexture(path);
+    for (const auto& fbSprite : *_fbData->sprites()) {
+        auto bytes = std::span<const std::byte>{
+            reinterpret_cast<const std::byte*>(fbSprite->data()->data()),
+            fbSprite->data()->size()
+        };
+        _textures.push_back(_renderer->loadTexture(bytes));
     }
 
-    _arrowBase = img::load(tilesPath / "arrow_base.png");
+    auto fbArrowBase =
+        _fbData->sprites()->Get(std::to_underlying(r::Sprite::ArrowBase));
+    auto fbArrowSpan = std::span{
+        reinterpret_cast<const std::byte*>(fbArrowBase->data()->data()),
+        fbArrowBase->data()->size()
+    };
+    _arrowBase = img::load(fbArrowSpan);
 }
 
-sdl::Texture& Resources::texture(TextureId textureId)
+sdl::Texture& Resources::texture(r::Sprite spriteId)
 {
-    return _textures.at(textureId);
+    return _textures.at(std::to_underlying(spriteId));
 }
 
-ttf::Font Resources::font(FontId fontId, int ptSize) const
+ttf::Font Resources::font(r::Font fontId, int ptSize) const
 {
-    std::string fontPath = "assets/fonts/" + fontPaths.at(fontId);
-    return ttf::Font{fontPath, ptSize};
+    auto fbFont = _fbData->fonts()->Get(std::to_underlying(fontId));
+    auto span = std::span{
+        reinterpret_cast<const std::byte*>(fbFont->data()->data()),
+        fbFont->data()->size()
+    };
+    return ttf::Font{span, ptSize};
 }
 
 sdl::Texture& Resources::arrowTexture(ArrowDescription arrows)

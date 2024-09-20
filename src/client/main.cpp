@@ -1,5 +1,6 @@
 #include "app.hpp"
-#include "fs.hpp"
+
+#include <x.hpp>
 
 #include <cstdlib>
 #include <exception>
@@ -11,7 +12,7 @@ int main(int, char*[]) try
     auto imgInit = img::Init{IMG_INIT_PNG};
     auto ttfInit = ttf::Init{};
 
-    App::initialize(fs::exeDir() / "jackal.yaml");
+    App::initialize(x::exeDir() / "jackal.yaml");
     app().run();
 
     return 0;

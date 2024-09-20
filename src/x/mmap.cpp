@@ -1,12 +1,18 @@
 #include <x/mmap.hpp>
 
-#ifdef _WIN32
+#include <x/exceptions.hpp>
+
+#if defined(__linux__)
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#elif defined(_WIN32)
 #include <Windows.h>
 #endif
 
 #include <cstring>
+#include <format>
 #include <source_location>
-#include <stdexcept>
 
 namespace x {
 
@@ -16,7 +22,10 @@ namespace {
 void checkErrno(std::source_location sl = std::source_location::current())
 {
     int e = errno;
-    throw Error{sl} << strerrorname_np(e) << ": " << strerrordesc_np(e);
+    throw Error{
+        std::format("{}: {}", strerrorname_np(e), strerrordesc_np(e)),
+        sl
+    };
 }
 #elif defined(_WIN32)
 [[noreturn]] void throwWindowsError()
@@ -39,7 +48,7 @@ void checkErrno(std::source_location sl = std::source_location::current())
 
     LocalFree(messageBuffer);
 
-    throw std::runtime_error{message};
+    throw Error{message};
 }
 #endif
 
@@ -75,8 +84,9 @@ void MemoryMap::map(const std::filesystem::path& path)
     int fd = open(path.string().c_str(), O_RDONLY);
     if (fd == -1) {
         int e = errno;
-        throw Error{} << "cannot open file " << path << ": " <<
-            strerrorname_np(e) << ": " << strerrordesc_np(e);
+        throw Error{std::format(
+            "cannot open file {}: {}: {}",
+            path.string(), strerrorname_np(e), strerrordesc_np(e))};
     };
 
     auto fileSize = lseek(fd, 0, SEEK_END);

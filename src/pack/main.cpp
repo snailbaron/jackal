@@ -104,7 +104,9 @@ int main(int argc, char* argv[])
 
     x::writeFile(builder.GetBufferSpan(), outputDataPath);
 
+    std::filesystem::create_directories(outputHeaderPath->parent_path());
     auto header = std::ofstream{*outputHeaderPath};
+    header.exceptions(std::ios::badbit | std::ios::failbit);
     header <<
         "#pragma once\n" <<
         "\n" <<

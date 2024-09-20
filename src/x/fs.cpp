@@ -20,6 +20,7 @@ template <class T>
 void writeFileImpl(
     std::span<const T> contents, const std::filesystem::path& path)
 {
+    std::filesystem::create_directories(path.parent_path());
     auto output = std::ofstream{path, std::ios::binary};
     output.exceptions(std::ios::badbit | std::ios::failbit);
     output.write(reinterpret_cast<const char*>(contents.data()), contents.size());

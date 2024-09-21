@@ -20,8 +20,10 @@ set(SDL2IMAGE_VENDORED TRUE)
 set(SDL2TTF_VENDORED TRUE)
 
 # yaml-cpp's messy use of dllexport causes MSVC to freak out (C4251). Always
-# link it statically.
-set(YAML_BUILD_SHARED_LIBS FALSE)
+# link it statically. We have to use a cache variable here, otherwise yaml-cpp's
+# CMakeLists.txt ignores it on first build due to
+# https://cmake.org/cmake/help/latest/policy/CMP0077.html.
+set(YAML_BUILD_SHARED_LIBS FALSE CACHE BOOL "build yaml-cpp shared libraries")
 
 add_subdirectory(flatbuffers)
 add_subdirectory(SDL)

@@ -91,43 +91,59 @@ void Field::render(View&)
     // Draw cells
     for (int x = 0; x < FIELD_DATA_SIZE; x++) {
         for (int y = 0; y < FIELD_DATA_SIZE; y++) {
-            TypeCellEnum cellType = app().game().cellType(x, y);
-			sdl::Texture& texture = textureForCellType(cellType);
-            app().window().drawTexture(texture, cellInnerRect({x, y}));
+            const auto& cell = app().game().cell(x, y);
+			sdl::Texture& texture = textureForCellType((TypeCellEnum)cell.type.type);
+            auto rect = cellInnerRect({x, y});
+            app().window().drawTexture(texture, rect);
+
+            auto coinRect = ScreenRect{
+                rect.origin + rect.size * 3 / 4,
+                rect.size / 4
+            };
+            for (int i = 0; i < cell.money; i++) {
+                auto& coinTexture = app().res().texture(r::Sprite::Coin);
+                app().window().drawTexture(coinTexture, coinRect);
+                coinRect.origin += {0, -5};
+            }
         }
     }
 
-    // Draw pirates
-    std::map<int, std::map<ClientGame::Cell, int>> pirateCount;
-    for (const Pirate& pirate : app().game().coreState().pirates) {
-        pirateCount[pirate.id_player][pirateCell(pirate)]++;
+    // draw ships
+    for (const auto& ship : app().game().coreState().ships) {
+        auto& shipTexture = app().res().texture(r::Sprite::Ship);
+        app().window().drawTexture(shipTexture, cellInnerRect(cellFromPoint(ship)));
     }
 
-    for (const auto& i : pirateCount) {
-        int playerId = i.first;
-		sdl::Texture* pirateTexture = nullptr;
-		switch (playerId) {
-		case 0:
-			pirateTexture = &app().res().texture(r::Sprite::PirateRed);
-			break;
-		case 1:
-			pirateTexture = &app().res().texture(r::Sprite::PirateGreen);
-			break;
-		case 2:
-			pirateTexture = &app().res().texture(r::Sprite::PirateBlue);
-			break;
-		case 3:
-			pirateTexture = &app().res().texture(r::Sprite::PirateYellow);
-			break;
-		}
+    // Draw pirates
+    std::map<ClientGame::Cell, std::vector<const Pirate*>> piratesByCell;
+    for (const Pirate& pirate : app().game().coreState().pirates) {
+        piratesByCell[pirateCell(pirate)].push_back(&pirate);
+    }
 
-		for (const auto& j : i.second) {
-            const ClientGame::Cell& pirateCell = j.first;
-            int anotherPirateCount = j.second;
+    for (const auto& [cell, pirates] : piratesByCell) {
+        auto rects = pirateRects(cell, pirates.size());
+        for (size_t i = 0; i < pirates.size(); i++) {
+            const auto& pirate = *pirates.at(i);
+            const auto& rect = rects.at(i);
 
-            auto rects = pirateRects(pirateCell, anotherPirateCount);
-            for (const auto& rect : rects) {
-                app().window().drawTexture(*pirateTexture, rect);
+            static const auto pirateTextureIds = std::vector{
+                r::Sprite::PirateRed,
+                r::Sprite::PirateGreen,
+                r::Sprite::PirateBlue,
+                r::Sprite::PirateYellow,
+            };
+            auto& pirateTexture =
+                app().res().texture(pirateTextureIds.at(pirate.id_player));
+
+            app().window().drawTexture(pirateTexture, rect);
+
+            if (pirate.money) {
+                auto& coinTexture = app().res().texture(r::Sprite::Coin);
+                auto coinRect = ScreenRect{
+                    rect.origin + rect.size / 2,
+                    rect.size / 2
+                };
+                app().window().drawTexture(coinTexture, coinRect);
             }
         }
     }
@@ -223,7 +239,7 @@ ClientGame::Cell Field::cellUnderPoint(const ScreenVector& point) const
     };
 }
 
-std::vector<ScreenRect> Field::pirateRects(const ClientGame::Cell& cell, int pirateCount)
+std::vector<ScreenRect> Field::pirateRects(const ClientGame::Cell& cell, size_t pirateCount)
 {
     float x = 0.f, y = -1.f;
     float angle = static_cast<float>(2 * M_PI / pirateCount);

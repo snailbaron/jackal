@@ -54,6 +54,7 @@ resources(
         tiles/cannon_right.png
         tiles/cannon_up.png
         tiles/closed.png
+        tiles/coin.png
         tiles/crocodile.png
         tiles/difficult_terrain.png
         tiles/fort.png
@@ -69,6 +70,7 @@ resources(
         tiles/pitfall.png
         tiles/root.png
         tiles/rum.png
+        tiles/ship.png
         tiles/treasure.png
         tiles/water.png
 )

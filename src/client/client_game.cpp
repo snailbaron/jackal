@@ -4,11 +4,6 @@
 
 namespace {
 
-ClientGame::Cell cellFromPoint(const Point& point)
-{
-    return {point.x - 2, point.y - 2};
-}
-
 Point makePoint(const ClientGame::Cell& cell, int depth)
 {
     return {cell.x + 2, cell.y + 2, depth};
@@ -45,6 +40,11 @@ const GameState& ClientGame::coreState() const
 int ClientGame::activePlayer() const
 {
     return _activePlayer;
+}
+
+const Cell& ClientGame::cell(int x, int y) const
+{
+    return _coreState.map[x + 2][y + 2];
 }
 
 TypeCellEnum ClientGame::cellType(int x, int y) const
@@ -99,6 +99,16 @@ void ClientGame::activateCell(const Cell& cell)
                 for (const Point& point : _game->GetLegalSteps(_movingPirate)) {
                     _validMoves[cellFromPoint(point)] = point.z;
                 }
+
+                const auto& piratePoint =
+                    _coreState.pirates.at(_movingPirate).place;
+                const auto& pirateCell =
+                    _coreState.map[piratePoint.x][piratePoint.y];
+                if (!_coreState.pirates.at(_movingPirate).money &&
+                        pirateCell.money > 0) {
+                    _validMoves.emplace(cell, 0);
+                }
+
                 _state = State::SelectTarget;
                 return;
             }
@@ -134,8 +144,19 @@ void ClientGame::activateCell(const Cell& cell)
                 return;
             }
 
-            ResponseType response = _game->Turn(
-                _movingPirate, makePoint(cell, cellDepth->second));
+            const auto& movingPiratePoint =
+                _coreState.pirates.at(_movingPirate).place;
+            auto movingPirateCell = cellFromPoint(movingPiratePoint);
+            const auto& movingPirateMapPoint =
+                _coreState.map[movingPiratePoint.x][movingPiratePoint.y];
+
+            auto response = ResponseType{};
+            if (cell == movingPirateCell && movingPirateMapPoint.money > 0) {
+                response = _game->UseMoney(_movingPirate);
+            } else {
+                response = _game->Turn(
+                    _movingPirate, makePoint(cell, cellDepth->second));
+            }
 
             switch (response) {
                 case IllegalTurn:
@@ -157,6 +178,11 @@ void ClientGame::activateCell(const Cell& cell)
             break;
         }
     }
+}
+
+ClientGame::Cell cellFromPoint(const Point& point)
+{
+    return {point.x - 2, point.y - 2};
 }
 
 ClientGame::Cell pirateCell(const Pirate& pirate)

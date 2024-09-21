@@ -6,7 +6,7 @@
 #include <exception>
 #include <iostream>
 
-int main(int, char*[]) try
+int main(int, char*[])
 {
     auto sdlInit = sdl::Init{SDL_INIT_AUDIO | SDL_INIT_VIDEO};
     auto imgInit = img::Init{IMG_INIT_PNG};
@@ -16,7 +16,4 @@ int main(int, char*[]) try
     app().run();
 
     return 0;
-} catch (const std::exception& e) {
-    std::cerr << e.what() << "\n";
-    return EXIT_FAILURE;
 }

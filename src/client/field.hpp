@@ -27,7 +27,7 @@ private:
     ScreenRect cellOuterRect(const ClientGame::Cell& cell);
     ScreenRect cellInnerRect(const ClientGame::Cell& cell);
     ClientGame::Cell cellUnderPoint(const ScreenVector& point) const;
-    std::vector<ScreenRect> pirateRects(const ClientGame::Cell& cell, int pirateCount);
+    std::vector<ScreenRect> pirateRects(const ClientGame::Cell& cell, size_t pirateCount);
     void activateCell(const Cell& cell);
 
     ScreenVector _position;

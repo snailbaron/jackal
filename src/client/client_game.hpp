@@ -30,6 +30,7 @@ public:
 
     const GameState& coreState() const;
     int activePlayer() const;
+    const ::Cell& cell(int x, int y) const;
     TypeCellEnum cellType(int x, int y) const;
     std::set<Cell> validMoves() const;
 
@@ -57,6 +58,7 @@ private:
     int _activePlayer;
 };
 
+ClientGame::Cell cellFromPoint(const Point& point);
 ClientGame::Cell pirateCell(const Pirate& pirate);
 
 std::ostream& operator<<(std::ostream& os, const ClientGame::Cell& cell);

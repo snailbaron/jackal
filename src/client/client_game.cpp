@@ -118,7 +118,7 @@ void ClientGame::activateCell(const Cell& cell)
                 _moveCandidates.clear();
                 for (const auto zPiratePair : candidates) {
                     _moveCandidates.push_back({
-                        cell.x, cell.y, zPiratePair.first});
+                        {cell.x, cell.y}, zPiratePair.first});
                 }
                 _state = State::ClarifySubject;
             }

@@ -128,7 +128,11 @@ struct Vector {
     template <class Zoom>
     Vector zoomed(Zoom zoom) const
     {
-        return { static_cast<T>(x * zoom), static_cast<T>(y * zoom) };
+        using U = std::common_type_t<T, Zoom>;
+        return {
+            static_cast<T>(static_cast<U>(x) * static_cast<U>(zoom)),
+            static_cast<T>(static_cast<U>(y) * static_cast<U>(zoom))
+        };
     }
 
     Vector loClamped(T lo) const

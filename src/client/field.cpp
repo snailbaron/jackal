@@ -14,7 +14,6 @@ namespace {
 
 // Magic to read GameState correctly
 const int FIELD_DATA_SIZE = ClientGame::FieldSize;
-const int FIELD_DATA_OFFSET = 2;
 
 // Field geometry
 const int GRID_WIDTH = 3;
@@ -242,16 +241,16 @@ ClientGame::Cell Field::cellUnderPoint(const ScreenVector& point) const
 std::vector<ScreenRect> Field::pirateRects(const ClientGame::Cell& cell, size_t pirateCount)
 {
     float x = 0.f, y = -1.f;
-    float angle = static_cast<float>(2 * M_PI / pirateCount);
+    float angle = static_cast<float>(2 * M_PI / (double)pirateCount);
     float co = std::cos(angle);
     float si = std::sin(angle);
 
     ScreenRect baseRect = cellInnerRect(cell).zoomed(0.5f);
     std::vector<ScreenRect> result;
-    for (int i = 0; i < pirateCount; i++) {
+    for (size_t i = 0; i < pirateCount; i++) {
         ScreenVector offset {
-            static_cast<int>(x * baseRect.size.x / 2),
-            static_cast<int>(y * baseRect.size.y / 2)};
+            static_cast<int>(x * (float)baseRect.size.x / 2),
+            static_cast<int>(y * (float)baseRect.size.y / 2)};
         result.push_back(baseRect.offset(offset));
 
         float xx = co * x + si * y;

@@ -136,13 +136,13 @@ ScreenRect Button::textArea() const
 int Button::frameWidth() const
 {
     return static_cast<int>(
-        std::min(screenSize().x, screenSize().y) * RELATIVE_FRAME_WIDTH);
+        (float)std::min(screenSize().x, screenSize().y) * RELATIVE_FRAME_WIDTH);
 }
 
 int Button::textMargin() const
 {
     return static_cast<int>(
-        std::min(screenSize().x, screenSize().y) * RELATIVE_TEXT_MARGIN);
+        (float)std::min(screenSize().x, screenSize().y) * RELATIVE_TEXT_MARGIN);
 }
 
 void Button::resize()

@@ -63,10 +63,17 @@ resources(
         tiles/ice.png
         tiles/native_woman.png
         tiles/pirate_blue.png
+        tiles/pirate_blue_rum.png
+        tiles/pirate_blue_run.png
         tiles/pirate_green.png
-        tiles/pirate_none.png
+        tiles/pirate_green_rum.png
+        tiles/pirate_green_run.png
         tiles/pirate_red.png
+        tiles/pirate_red_rum.png
+        tiles/pirate_red_run.png
         tiles/pirate_yellow.png
+        tiles/pirate_yellow_rum.png
+        tiles/pirate_yellow_run.png
         tiles/pitfall.png
         tiles/root.png
         tiles/rum.png

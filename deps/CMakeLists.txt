@@ -25,7 +25,13 @@ set(SDL2TTF_VENDORED TRUE)
 # https://cmake.org/cmake/help/latest/policy/CMP0077.html.
 set(YAML_BUILD_SHARED_LIBS FALSE CACHE BOOL "build yaml-cpp shared libraries")
 
+# Disable asm in grcp build
+set(OPENSSL_NO_ASM TRUE)
+set(protobuf_INSTALL FALSE)
+set(utf8_range_ENABLE_INSTALL FALSE)
+
 add_subdirectory(flatbuffers)
+#add_subdirectory(grpc)
 add_subdirectory(SDL)
 add_subdirectory(SDL_image)
 add_subdirectory(SDL_ttf)

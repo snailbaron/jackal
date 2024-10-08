@@ -41,7 +41,6 @@ public:
 private:
     enum class State {
         SelectSubject,
-        ClarifySubject,
         SelectTarget,
     };
 

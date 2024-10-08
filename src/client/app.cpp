@@ -1,7 +1,10 @@
 #include "app.hpp"
-#include "gui.hpp"
+
 #include "client_game.hpp"
+#include "gui.hpp"
 #include "sdl.hpp"
+#include "timer.hpp"
+
 #include <stdexcept>
 #include <utility>
 #include <fstream>
@@ -21,6 +24,7 @@ void App::run()
     setMainMenu();
 
     bool done = false;
+    auto timer = FrameTimer{_config.fps};
     while (!done) {
         SDL_Event evt;
         while (SDL_PollEvent(&evt)) {
@@ -35,8 +39,12 @@ void App::run()
             }
         }
 
-        _game.update();
-        _view->render();
+        if (timer() > 0) {
+            _game.update();
+            _view->render();
+        }
+
+        timer.relax();
     }
 
 }

@@ -20,6 +20,7 @@ struct Config {
     } field;
 
     int numberOfPlayers = 4;
+    int fps = 60;
 };
 
 Config loadConfig(const std::filesystem::path& path);

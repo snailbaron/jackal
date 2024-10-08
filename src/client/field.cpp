@@ -1,9 +1,13 @@
 #include "field.hpp"
-#include "view.hpp"
+
 #include "app.hpp"
+#include "gui.hpp"
 #include "log.hpp"
+#include "view.hpp"
+
 #include "../core/Cell.h"
 #include "../core/GameState.h"
+
 #include <map>
 #include <cmath>
 #include <tuple>
@@ -27,7 +31,6 @@ const Color CELL_OUTLINE_COLOR { 255, 150, 0 };
 const int CELL_DELTA = GRID_WIDTH + CELL_SIZE;
 const int FIELD_SIZE = CELL_DELTA * FIELD_DATA_SIZE + GRID_WIDTH;
 
-
 const std::map<TypeCellEnum, r::Sprite> cellTypeTextureIds {
     { Horse, r::Sprite::Horse },
     { Ice, r::Sprite::Ice },
@@ -50,6 +53,25 @@ const std::map<TypeCellEnum, r::Sprite> cellTypeTextureIds {
     { Water, r::Sprite::Water },
     { Root, r::Sprite::Root },
 };
+
+r::Sprite pirateTexture(const Pirate& pirate)
+{
+    auto mapping = std::map<std::pair<int, MovieType>, r::Sprite>{
+        {{0, MovieType::none}, r::Sprite::PirateRed},
+        {{0, MovieType::drink_rum}, r::Sprite::PirateRedRum},
+        {{0, MovieType::run}, r::Sprite::PirateRedRun},
+        {{1, MovieType::none}, r::Sprite::PirateGreen},
+        {{1, MovieType::drink_rum}, r::Sprite::PirateGreenRum},
+        {{1, MovieType::run}, r::Sprite::PirateGreenRun},
+        {{2, MovieType::none}, r::Sprite::PirateBlue},
+        {{2, MovieType::drink_rum}, r::Sprite::PirateBlueRum},
+        {{2, MovieType::run}, r::Sprite::PirateBlueRun},
+        {{3, MovieType::none}, r::Sprite::PirateYellow},
+        {{3, MovieType::drink_rum}, r::Sprite::PirateYellowRum},
+        {{3, MovieType::run}, r::Sprite::PirateYellowRun},
+    };
+    return mapping.at({pirate.id_player, pirate.movie});
+}
 
 sdl::Texture& textureForCellType(TypeCellEnum cellType)
 {
@@ -104,6 +126,20 @@ void Field::render(View&)
                 app().window().drawTexture(coinTexture, coinRect);
                 coinRect.origin += {0, -5};
             }
+
+            size_t cellDepth = 1;
+            for (auto* p = &cell; p->next; p = p->next) {
+                cellDepth++;
+            }
+            if (cellDepth > 1) {
+                auto depthText = WrittenText{std::to_string(cellDepth), r::Font::FyodorBold, Color{200, 0, 200}, {16, 16}};
+                auto depthTextRect = ScreenRect{
+                    rect.origin + ScreenVector{0, rect.size.y * 3 / 4},
+                    rect.size / 4
+                };
+                app().window().drawTexturePart(
+                    depthText.texture(), depthTextRect.padded(depthText.screenOffset()), depthText.textureRect());
+            }
         }
     }
 
@@ -125,16 +161,8 @@ void Field::render(View&)
             const auto& pirate = *pirates.at(i);
             const auto& rect = rects.at(i);
 
-            static const auto pirateTextureIds = std::vector{
-                r::Sprite::PirateRed,
-                r::Sprite::PirateGreen,
-                r::Sprite::PirateBlue,
-                r::Sprite::PirateYellow,
-            };
-            auto& pirateTexture =
-                app().res().texture(pirateTextureIds.at(pirate.id_player));
-
-            app().window().drawTexture(pirateTexture, rect);
+            auto& texture = app().res().texture(pirateTexture(pirate));
+            app().window().drawTexture(texture, rect);
 
             if (pirate.money) {
                 auto& coinTexture = app().res().texture(r::Sprite::Coin);
@@ -144,8 +172,20 @@ void Field::render(View&)
                 };
                 app().window().drawTexture(coinTexture, coinRect);
             }
+
+            if (pirate.place.z > 1) {
+                auto textArea = ScreenRect{
+                    rect.origin + ScreenVector{rect.size.x / 2, 0},
+                    rect.size / 2
+                };
+                auto levelText = WrittenText{std::to_string(pirate.place.z), r::Font::FyodorBold, Color{200, 0, 200}, ScreenVector{16, 16}};
+                app().window().drawTexturePart(
+                    levelText.texture(), textArea.padded(levelText.screenOffset()), levelText.textureRect());
+            }
         }
     }
+
+
 
     // Draw valid moves
     for (const auto& cell : app().game().validMoves()) {

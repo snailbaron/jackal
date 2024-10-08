@@ -15,6 +15,7 @@ add_executable(client
     main.cpp
     resources.cpp
     sdl.cpp
+    timer.cpp
     view.cpp
     window.cpp
 )

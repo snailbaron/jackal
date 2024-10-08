@@ -16,7 +16,7 @@ void tostring(int i, string& str)
 }
 
 
-void old_main() {
+void main() {
 	JackalGame myGame;
 	myGame.NewGame();
 	for(;;)
@@ -51,11 +51,11 @@ void old_main() {
 				{
 				case (Horse): str = "Hors"; break;
 				case (Ice):  str = "Ice "; break;
-				case(Cannibal): str = "Cann"; break;			
+				case(Cannibal): str = "Cann"; break;
 				case(Fort): str = "Fort"; break;
-					case (NativeWoman ): str = "Puru"; break;			
+					case (NativeWoman ): str = "Puru"; break;
 					case  (Pitfall):    str = "Pitf"; break;
-					case (Rum):   str = 	"Rum "; break;				
+					case (Rum):   str = 	"Rum "; break;
 					case (Crocodile	):  str = "Croc"; break;
 					case (DifficultTerrain): str = "Diff"; break;
 					case (Treasure): str = "Trea"; break;
@@ -63,12 +63,12 @@ void old_main() {
  					case (CannonLeft): str = "CaLF"; break;
 					case (CannonRight): str = "CaRG"; break;
 					case (CannonDown): str = "CaDN"; break;
-					case (Baloon): str = "Ball"; break;				
-					case (Airplane): str = "Plan"; break;			
+					case (Baloon): str = "Ball"; break;
+					case (Airplane): str = "Plan"; break;
 					case (Grass): str = "Grss"; break;
 					case (Closed): str = "CLOS"; break;
-					case (Water): str = "WATE"; break;		
-					case (Root): str = "RRRR"; break;		
+					case (Water): str = "WATE"; break;
+					case (Root): str = "RRRR"; break;
 				}
 				str = str+" ";
 				if (state.map[i][j].money>0)
@@ -101,7 +101,7 @@ void old_main() {
 		cout<<endl;
 		cout<<"my money:  "<<state.map[state.ships[0].x][state.ships[0].y].money<<endl;
 		vector<Point> tur;
-		
+
 		for (int i =0; i<state.movie_pirate.size(); i++)
 		{
 			tur = myGame.GetLegalSteps(state.movie_pirate[i]);

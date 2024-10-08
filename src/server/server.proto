@@ -1,0 +1,76 @@
+enum MoveType {
+    RUN = 0;
+    DRINK_RUM = 1;
+    NONE = 2;
+}
+
+message Point {
+    int32 x = 1;
+    int32 y = 2;
+    int32 z = 3;
+}
+
+message Pirate {
+    bool is_alive = 1;
+    bool has_money = 2;
+    MoveType move_type = 3;
+    Point place = 4;
+    int32 player_id = 5;
+}
+
+enum CellType {
+	ARROW = 255;
+	HORSE = 256;
+	ICE = 257;
+	CANNIBAL = 258;
+	FORT = 259;
+	NATIVE_WOMAN = 260;
+	PITFALL = 261;
+	RUM = 262;
+	CROCODILE = 263;
+	DIFFICULT_TERRAIN = 264;
+	TREASURE = 265;
+	CANNON_UP = 266;
+	CANNON_LEFT = 267;
+	CANNON_RIGHT = 268;
+	CANNON_DOWN = 269;
+	BALOON = 270;
+	AIRPLANE = 271;
+	GRASS = 272;
+	CLOSED = 300;
+	WATER = 400;
+	ROOT = 500;
+};
+
+message Cell {
+	CellType type = 1;
+	int32 money = 2;
+	repeated int32 pirate = 3;
+	int32 depth = 4;
+	repeated Point ships = 5;
+}
+
+message TimeState {
+	int32 day = 1;
+	int32 step = 2;
+}
+
+message GameState {
+    repeated Pirate pirates = 1;
+	repeated Cell map = 2;
+	repeated Point ships = 3;
+	TimeState current_time = 4;
+}
+
+enum ResponseType {
+	ILLEGAL_TURN = 0;
+	OK = 1;
+	WAIT_TURN = 2;
+}
+
+service JackalService {
+    rpc GetGameState() returns (GameState) {}
+	rpc GetLegalSteps(int32) returns (stream Point) {}
+	rpc MakeTurn(int32, Point) {}
+	rpc UseMoney(int32) {}
+}

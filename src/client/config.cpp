@@ -17,6 +17,7 @@ void iterateConfig(auto& config, YAML::Node yaml, const auto& f)
     f(config.field.gridColor, yaml["field"]["grid_color"]);
     f(config.field.gridWidth, yaml["field"]["grid_width"]);
     f(config.numberOfPlayers, yaml["number_of_players"]);
+    f(config.fps, yaml["fps"]);
 }
 
 } // namespace

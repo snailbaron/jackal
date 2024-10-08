@@ -1,5 +1,6 @@
 #include "client_game.hpp"
 
+#include <algorithm>
 #include <cassert>
 
 namespace {
@@ -83,53 +84,33 @@ void ClientGame::activateCell(const Cell& cell)
     switch (_state) {
         case State::SelectSubject:
         {
-            // Find all candidates for the move: z-coordinate => pirate ID
-            std::map<int, int> candidates;
-            for (int i : _coreState.movie_pirate) {
-                const Point& piratePoint = _coreState.pirates[i].place;
-                if (cellFromPoint(piratePoint) == cell) {
-                    candidates[piratePoint.z] = i;
-                }
+            const auto& coreCell = this->cell(cell.x, cell.y);
+            if (coreCell.pirate.empty()) {
+                break;
             }
 
-            // All candidates are on the same depth. Take any of them.
-            if (candidates.size() == 1) {
-                _movingPirate = candidates.begin()->second;
-                _validMoves.clear();
-                for (const Point& point : _game->GetLegalSteps(_movingPirate)) {
-                    _validMoves[cellFromPoint(point)] = point.z;
-                }
+            auto highestPirate = std::ranges::max_element(
+                coreCell.pirate, {},
+                [this] (int i) {
+                    return _coreState.pirates.at(i).place.z;
+                });
 
-                const auto& piratePoint =
-                    _coreState.pirates.at(_movingPirate).place;
-                const auto& pirateCell =
-                    _coreState.map[piratePoint.x][piratePoint.y];
-                if (!_coreState.pirates.at(_movingPirate).money &&
-                        pirateCell.money > 0) {
-                    _validMoves.emplace(cell, 0);
-                }
-
-                _state = State::SelectTarget;
-                return;
+            _movingPirate = *highestPirate;
+            _validMoves.clear();
+            for (const Point& point : _game->GetLegalSteps(_movingPirate)) {
+                _validMoves[cellFromPoint(point)] = point.z;
             }
 
-            // There are candidates on different depths. Need to select one.
-            if (candidates.size() > 1) {
-                _moveCandidates.clear();
-                for (const auto zPiratePair : candidates) {
-                    _moveCandidates.push_back({
-                        {cell.x, cell.y}, zPiratePair.first});
-                }
-                _state = State::ClarifySubject;
+            const auto& piratePoint =
+                _coreState.pirates.at(_movingPirate).place;
+            const auto& pirateCell =
+                _coreState.map[piratePoint.x][piratePoint.y];
+            if (!_coreState.pirates.at(_movingPirate).money &&
+                    pirateCell.money > 0) {
+                _validMoves.emplace(cell, 0);
             }
-            break;
-        }
 
-        case State::ClarifySubject:
-        {
-            // If a cell is activated when clarifying move subject, cancel
-            // clarification, and return to move subject selection.
-            _state = State::SelectSubject;
+            _state = State::SelectTarget;
             break;
         }
 

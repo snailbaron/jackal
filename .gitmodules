@@ -16,3 +16,6 @@
 [submodule "deps/flatbuffers"]
 	path = deps/flatbuffers
 	url = https://github.com/google/flatbuffers.git
+[submodule "deps/grpc"]
+	path = deps/grpc
+	url = https://github.com/grpc/grpc.git

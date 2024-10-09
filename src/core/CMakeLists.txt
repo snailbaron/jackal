@@ -7,6 +7,7 @@ add_library(core STATIC
     Point.cpp
     TimeState.cpp
 )
+target_include_directories(core PUBLIC .)
 
 add_executable(jackal-cli
     main.cpp

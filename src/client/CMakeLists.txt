@@ -26,11 +26,11 @@ target_link_libraries(client
         resource-ids
         x
 
-        yaml-cpp::yaml-cpp
-        SDL2::SDL2
+        yaml-cpp
+        SDL2::SDL2-static
         SDL2::SDL2main
-        SDL2_image::SDL2_image
-        SDL2_ttf::SDL2_ttf
+        SDL2_image::SDL2_image-static
+        SDL2_ttf::SDL2_ttf-static
 )
 add_dependencies(client assets)
 

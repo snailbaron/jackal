@@ -31,7 +31,7 @@ set(protobuf_INSTALL FALSE)
 set(utf8_range_ENABLE_INSTALL FALSE)
 
 add_subdirectory(flatbuffers)
-#add_subdirectory(grpc)
+add_subdirectory(grpc)
 add_subdirectory(SDL)
 add_subdirectory(SDL_image)
 add_subdirectory(SDL_ttf)

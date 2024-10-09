@@ -1,7 +1,11 @@
+syntax = "proto3";
+
+package proto;
+
 enum MoveType {
-    RUN = 0;
-    DRINK_RUM = 1;
-    NONE = 2;
+    MOVE_TYPE_RUN = 0;
+    MOVE_TYPE_DRINK_RUM = 1;
+    MOVE_TYPE_NONE = 2;
 }
 
 message Point {
@@ -19,27 +23,29 @@ message Pirate {
 }
 
 enum CellType {
-	ARROW = 255;
-	HORSE = 256;
-	ICE = 257;
-	CANNIBAL = 258;
-	FORT = 259;
-	NATIVE_WOMAN = 260;
-	PITFALL = 261;
-	RUM = 262;
-	CROCODILE = 263;
-	DIFFICULT_TERRAIN = 264;
-	TREASURE = 265;
-	CANNON_UP = 266;
-	CANNON_LEFT = 267;
-	CANNON_RIGHT = 268;
-	CANNON_DOWN = 269;
-	BALOON = 270;
-	AIRPLANE = 271;
-	GRASS = 272;
-	CLOSED = 300;
-	WATER = 400;
-	ROOT = 500;
+	CELL_TYPE_UNSPECIFIED = 0;
+
+	CELL_TYPE_ARROW = 255;
+	CELL_TYPE_HORSE = 256;
+	CELL_TYPE_ICE = 257;
+	CELL_TYPE_CANNIBAL = 258;
+	CELL_TYPE_FORT = 259;
+	CELL_TYPE_NATIVE_WOMAN = 260;
+	CELL_TYPE_PITFALL = 261;
+	CELL_TYPE_RUM = 262;
+	CELL_TYPE_CROCODILE = 263;
+	CELL_TYPE_DIFFICULT_TERRAIN = 264;
+	CELL_TYPE_TREASURE = 265;
+	CELL_TYPE_CANNON_UP = 266;
+	CELL_TYPE_CANNON_LEFT = 267;
+	CELL_TYPE_CANNON_RIGHT = 268;
+	CELL_TYPE_CANNON_DOWN = 269;
+	CELL_TYPE_BALOON = 270;
+	CELL_TYPE_AIRPLANE = 271;
+	CELL_TYPE_GRASS = 272;
+	CELL_TYPE_CLOSED = 300;
+	CELL_TYPE_WATER = 400;
+	CELL_TYPE_ROOT = 500;
 };
 
 message Cell {
@@ -47,7 +53,6 @@ message Cell {
 	int32 money = 2;
 	repeated int32 pirate = 3;
 	int32 depth = 4;
-	repeated Point ships = 5;
 }
 
 message TimeState {
@@ -63,14 +68,26 @@ message GameState {
 }
 
 enum ResponseType {
-	ILLEGAL_TURN = 0;
-	OK = 1;
-	WAIT_TURN = 2;
+	RESPONSE_TYPE_ILLEGAL_TURN = 0;
+	RESPONSE_TYPE_OK = 1;
+	RESPONSE_TYPE_WAIT_TURN = 2;
+}
+
+message PirateId {
+	int32 id = 1;
+}
+
+message MakeTurnRequest {
+	int32 pirate_id = 1;
+	Point target_point = 2;
+}
+
+message Empty {
 }
 
 service JackalService {
-    rpc GetGameState() returns (GameState) {}
-	rpc GetLegalSteps(int32) returns (stream Point) {}
-	rpc MakeTurn(int32, Point) {}
-	rpc UseMoney(int32) {}
+    rpc GetGameState(Empty) returns (GameState) {}
+	rpc GetLegalSteps(PirateId) returns (stream Point) {}
+	rpc MakeTurn(MakeTurnRequest) returns (Empty) {}
+	rpc UseMoney(PirateId) returns (Empty) {}
 }

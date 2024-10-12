@@ -3,7 +3,6 @@ add_library(core STATIC
     ChangeMap.cpp
     GameState.cpp
     JackalGame.cpp
-    main.cpp
     Point.cpp
     TimeState.cpp
 )

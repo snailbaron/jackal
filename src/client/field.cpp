@@ -24,8 +24,8 @@ const int GRID_WIDTH = 3;
 const int CELL_SIZE = 64;
 
 // Field colors
-const Color GRID_COLOR { 100, 100, 100 };
-const Color CELL_OUTLINE_COLOR { 255, 150, 0 };
+const SDL_Color GRID_COLOR { 100, 100, 100 };
+const SDL_Color CELL_OUTLINE_COLOR { 255, 150, 0 };
 
 // Calculated field parameters
 const int CELL_DELTA = GRID_WIDTH + CELL_SIZE;
@@ -132,7 +132,7 @@ void Field::render(View&)
                 cellDepth++;
             }
             if (cellDepth > 1) {
-                auto depthText = WrittenText{std::to_string(cellDepth), r::Font::FyodorBold, Color{200, 0, 200}, {16, 16}};
+                auto depthText = WrittenText{std::to_string(cellDepth), r::Font::FyodorBold, SDL_Color{200, 0, 200}, {16, 16}};
                 auto depthTextRect = ScreenRect{
                     rect.origin + ScreenVector{0, rect.size.y * 3 / 4},
                     rect.size / 4
@@ -178,14 +178,12 @@ void Field::render(View&)
                     rect.origin + ScreenVector{rect.size.x / 2, 0},
                     rect.size / 2
                 };
-                auto levelText = WrittenText{std::to_string(pirate.place.z), r::Font::FyodorBold, Color{200, 0, 200}, ScreenVector{16, 16}};
+                auto levelText = WrittenText{std::to_string(pirate.place.z), r::Font::FyodorBold, SDL_Color{200, 0, 200}, ScreenVector{16, 16}};
                 app().window().drawTexturePart(
                     levelText.texture(), textArea.padded(levelText.screenOffset()), levelText.textureRect());
             }
         }
     }
-
-
 
     // Draw valid moves
     for (const auto& cell : app().game().validMoves()) {

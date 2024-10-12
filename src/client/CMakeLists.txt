@@ -1,9 +1,3 @@
-if(MSVC)
-    add_compile_options(/WX)
-else()
-    add_compile_options(-Werror)
-endif()
-
 add_executable(client
     app.cpp
     client_game.cpp
@@ -16,11 +10,13 @@ add_executable(client
     resources.cpp
     sdl.cpp
     timer.cpp
+    universal_game.cpp
     view.cpp
     window.cpp
 )
 target_link_libraries(client
     PRIVATE
+        client-server-api
         core
         data
         resource-ids

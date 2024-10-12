@@ -1,5 +1,6 @@
 #include "server.grpc.pb.h"
 
+#include <client-server-api.hpp>
 #include <JackalGame.h>
 
 #include <grpcpp/server_builder.h>
@@ -10,108 +11,82 @@
 
 class JackalServiceImpl final : public proto::JackalService::Service {
 public:
-    JackalServiceImpl()
+    grpc::Status NewGame(
+        grpc::ServerContext* context,
+        const proto::NewGameRequest* request,
+        proto::EmptyResponse* response) override
     {
-        _core.NewGame();
+        auto lock = std::lock_guard{_mutex};
+
+        if (request->player_count() == 0) {
+            _core.NewGame();
+        } else {
+            _core.NewGame(request->player_count());
+        }
+
+        return grpc::Status::OK;
     }
 
     grpc::Status GetGameState(
         grpc::ServerContext* context,
-        const proto::Empty* request,
+        const proto::EmptyRequest* request,
         proto::GameState* response) override
     {
         auto lock = std::lock_guard{_mutex};
 
         auto state = _core.GetGameState();
+        *response = encode(state);
 
-        for (const auto& pirate : state.pirates) {
-            auto protoPirate = response->add_pirates();
-            protoPirate->set_is_alive(pirate.live);
-            protoPirate->set_has_money(pirate.money);
-            protoPirate->set_move_type(proto::MoveType{pirate.movie});
-            auto protoPlace = protoPirate->mutable_place();
-            protoPlace->set_x(pirate.place.x);
-            protoPlace->set_y(pirate.place.y);
-            protoPlace->set_z(pirate.place.z);
-            protoPirate->set_player_id(pirate.id_player);
-        }
+        return grpc::Status::OK;
+    }
 
-        for (const auto& row : state.map) {
-            for (const auto& cell : row) {
-                auto protoCell = response->add_map();
-                protoCell->set_type(proto::CellType{cell.type.type});
-                protoCell->set_money(cell.money);
-                for (const auto& pirateId : cell.pirate) {
-                    protoCell->add_pirate(pirateId);
-                }
 
-                size_t cellDepth = 1;
-                for (auto p = cell.next; p; p = p->next) {
-                    cellDepth++;
-                }
-                protoCell->set_depth(cellDepth);
-            }
-        }
+    grpc::Status GetChangesMap(
+        grpc::ServerContext* context,
+        const proto::TimeState* request,
+        proto::ChangeMap* response) override
+    {
+        auto lock = std::lock_guard{_mutex};
 
-        for (const auto& shipPoint : state.ships) {
-            auto protoShip = response->add_ships();
-            protoShip->set_x(shipPoint.x);
-            protoShip->set_y(shipPoint.y);
-            protoShip->set_z(shipPoint.z);
-        }
-
-        auto protoCurrentTime = response->mutable_current_time();
-        protoCurrentTime->set_day(state.cur_time.day);
-        protoCurrentTime->set_step(state.cur_time.step);
-
+        *response = encode(_core.GetChangesMap(decode(*request)));
         return grpc::Status::OK;
     }
 
     grpc::Status GetLegalSteps(
         grpc::ServerContext* context,
-        const proto::PirateId* request,
+        const proto::PirateIdRequest* request,
         grpc::ServerWriter<proto::Point>* writer) override
     {
         auto lock = std::lock_guard{_mutex};
 
-        auto legalPoints = _core.GetLegalSteps(request->id());
-        for (const auto& point : legalPoints) {
-            auto protoPoint = proto::Point{};
-            protoPoint.set_x(point.x);
-            protoPoint.set_y(point.y);
-            protoPoint.set_z(point.z);
-            writer->Write(protoPoint);
+        for (const auto& point : _core.GetLegalSteps(request->pirate_id())) {
+            writer->Write(encode(point));
         }
-
         return grpc::Status::OK;
     }
 
     grpc::Status MakeTurn(
         grpc::ServerContext* context,
         const proto::MakeTurnRequest* request,
-        proto::Empty* response)
+        proto::StatusResponse* response) override
     {
         auto lock = std::lock_guard{_mutex};
 
-        auto point = Point{
-            .x = request->target_point().x(),
-            .y = request->target_point().y(),
-            .z = request->target_point().z(),
-        };
-        _core.Turn(request->pirate_id(), point);
-
+        response->set_response_type(
+            (proto::ResponseType)_core.Turn(
+                request->pirate_id(), decode(request->target_point())));
         return grpc::Status::OK;
     }
 
     grpc::Status UseMoney(
         grpc::ServerContext* context,
-        const ::proto::PirateId* request,
-        proto::Empty* response)
+        const proto::PirateIdRequest* request,
+        proto::StatusResponse* response) override
     {
         auto lock = std::lock_guard{_mutex};
 
-        _core.UseMoney(request->id());
-
+        response->set_response_type(
+            (proto::ResponseType)_core.UseMoney(request->pirate_id()));
         return grpc::Status::OK;
     }
 

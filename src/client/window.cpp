@@ -46,19 +46,25 @@ sdl::Renderer& Window::renderer()
     return _renderer;
 }
 
-void Window::clear(const Color& color)
+void Window::clear(const SDL_Color& color)
 {
     setColor(color);
     _renderer.clear();
 }
 
-void Window::drawRect(int x, int y, int w, int h, const Color& color)
+void Window::clear(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    setColor(r, g, b, a);
+    _renderer.clear();
+}
+
+void Window::drawRect(int x, int y, int w, int h, const SDL_Color& color)
 {
     setColor(color);
     _renderer.fillRect({ x, y, w, h });
 }
 
-void Window::drawRect(const ScreenRect& rect, const Color& color)
+void Window::drawRect(const ScreenRect& rect, const SDL_Color& color)
 {
     setColor(color);
     _renderer.fillRect(rect.sdl());
@@ -102,7 +108,7 @@ void Window::drawGrid(
     int cellWidth,
     int cellHeight,
     int gridLineWidth,
-    const Color& color)
+    const SDL_Color& color)
 {
     int verticalDelta = gridLineWidth + cellHeight;
     int horizontalDelta = gridLineWidth + cellWidth;
@@ -130,7 +136,12 @@ void Window::present()
  * Implementation details
  */
 
-void Window::setColor(const Color& color)
+void Window::setColor(const SDL_Color& color)
 {
     _renderer.setDrawColor(color.r, color.g, color.b, color.a);
+}
+
+void Window::setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    _renderer.setDrawColor(r, g, b, a);
 }

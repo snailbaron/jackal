@@ -10,7 +10,6 @@
 #include <fstream>
 
 App::App(const std::filesystem::path& configFile)
-    : _game(std::make_shared<JackalGame>())
 {
     _config = loadConfig(configFile);
     _window = Window{_config.window};
@@ -52,25 +51,41 @@ void App::run()
 void App::setMainMenu()
 {
     _view->clear();
-    _view->createGuiElement<SolidBackground>(Color{ 255, 250, 240 });
+    _view->createGuiElement<SolidBackground>(SDL_Color{255, 250, 240});
 
     _view->createGuiElement<Button>(
-        RelativeRect(0.3, 0.2, 0.4, 0.1),
-        "New game",
+        RelativeRect(0.3, 0.2, 0.4, 0.07),
+        "New Game",
         [this] {
-            _game.startNewGame(_config.numberOfPlayers);
+            _game.startLocalGame(1);
             setGameField();
         });
 
     _view->createGuiElement<Button>(
-        RelativeRect(0.3, 0.4, 0.4, 0.1),
+        RelativeRect(0.3, 0.3, 0.4, 0.07),
+        "Hot Seat",
+        [this] {
+            _game.startLocalGame(_config.numberOfPlayers);
+            setGameField();
+        });
+
+    _view->createGuiElement<Button>(
+        RelativeRect(0.3, 0.4, 0.4, 0.07),
+        "New Remote Game",
+        [this] {
+            _game.startRemoteGame();
+            setGameField();
+        });
+
+    _view->createGuiElement<Button>(
+        RelativeRect(0.3, 0.5, 0.4, 0.07),
         "Options",
         [this] {
             setOptionsMenu();
         });
 
     _view->createGuiElement<Button>(
-        RelativeRect(0.3, 0.6, 0.4, 0.1),
+        RelativeRect(0.3, 0.7, 0.4, 0.07),
         "Quit",
         [] {
             SDL_Event evt;
@@ -83,7 +98,7 @@ void App::setOptionsMenu()
 {
     _view->clear();
 
-    _view->createGuiElement<SolidBackground>(Color{ 255, 250, 240 });
+    _view->createGuiElement<SolidBackground>(SDL_Color{255, 250, 240});
     _view->createGuiElement<Button>(
         RelativeRect(0.2, 0.4, 0.6, 0.06),
         "[PLACEHOLDER. OPTIONS MENU IS NOT IMPLEMENTED.]",
@@ -100,7 +115,7 @@ void App::setGameField()
 {
     _view->clear();
 
-    _view->createGuiElement<SolidBackground>(Color{ 255, 250, 240 });
+    _view->createGuiElement<SolidBackground>(SDL_Color{255, 250, 240});
     _view->createGuiElement<Field>();
     _view->createGuiElement<Button>(
         RelativeRect(0.9, 0.05, 0.08, 0.05),
@@ -108,4 +123,6 @@ void App::setGameField()
         [this] {
             setMainMenu();
         });
+    _view->createGuiElement<MoveIndicator>(
+        RelativeRect(0.9, 0.15, 0.05, 0.05));
 }

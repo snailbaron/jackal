@@ -16,7 +16,7 @@ void View::clear()
 
 void View::render()
 {
-    _window->clear(Color{255, 0, 255});
+    _window->clear(255, 0, 255);
 
     for (auto& gui : _guiElements) {
         gui->render(*this);

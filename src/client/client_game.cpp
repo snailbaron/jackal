@@ -25,14 +25,6 @@ std::ostream& operator<<(std::ostream& os, const ClientGame::Position& position)
     return os;
 }
 
-ClientGame::ClientGame(std::shared_ptr<JackalGame> game)
-    : _game(game)
-    , _coreState(game->GetGameState())
-    , _state(State::SelectSubject)
-    , _playerCount(0)
-    , _activePlayer(-1)
-{ }
-
 const GameState& ClientGame::coreState() const
 {
     return _coreState;
@@ -66,17 +58,31 @@ std::set<ClientGame::Cell> ClientGame::validMoves() const
     return cells;
 }
 
-void ClientGame::startNewGame(int playerCount)
+void ClientGame::startLocalGame(int playerCount)
 {
     assert(playerCount >= 1 && playerCount <= 4);
+
+    _game = std::make_unique<LocalGame>();
+    _coreState = _game->gameState();
+    _state = State::SelectSubject;
     _playerCount = playerCount;
     _activePlayer = 0;
-    _game->NewGame(playerCount);
+    _game->newGame(playerCount);
+}
+
+void ClientGame::startRemoteGame()
+{
+    _game = std::make_unique<RemoteGame>();
+    _coreState = _game->gameState();
+    _state = State::SelectSubject;
+    _game->newGame();
 }
 
 void ClientGame::update()
 {
-    _coreState = _game->GetGameState();
+    if (_game) {
+        _coreState = _game->gameState();
+    }
 }
 
 void ClientGame::activateCell(const Cell& cell)
@@ -85,19 +91,27 @@ void ClientGame::activateCell(const Cell& cell)
         case State::SelectSubject:
         {
             const auto& coreCell = this->cell(cell.x, cell.y);
-            if (coreCell.pirate.empty()) {
+            if (std::ranges::find_if(
+                    coreCell.pirate,
+                    [this] (int pirateId) {
+                        return _coreState.pirates.at(pirateId).id_player == activePlayer();
+                    }) == coreCell.pirate.end()) {
                 break;
             }
 
             auto highestPirate = std::ranges::max_element(
                 coreCell.pirate, {},
                 [this] (int i) {
+                    if (_coreState.pirates.at(i).id_player != activePlayer()) {
+                        return -1;
+                    }
+
                     return _coreState.pirates.at(i).place.z;
                 });
 
             _movingPirate = *highestPirate;
             _validMoves.clear();
-            for (const Point& point : _game->GetLegalSteps(_movingPirate)) {
+            for (const Point& point : _game->legalSteps(_movingPirate)) {
                 _validMoves[cellFromPoint(point)] = point.z;
             }
 
@@ -133,9 +147,9 @@ void ClientGame::activateCell(const Cell& cell)
 
             auto response = ResponseType{};
             if (cell == movingPirateCell && movingPirateMapPoint.money > 0) {
-                response = _game->UseMoney(_movingPirate);
+                response = _game->useMoney(_movingPirate);
             } else {
-                response = _game->Turn(
+                response = _game->makeTurn(
                     _movingPirate, makePoint(cell, cellDepth->second));
             }
 
@@ -151,7 +165,7 @@ void ClientGame::activateCell(const Cell& cell)
 
                 case WaitTurn:
                     _validMoves.clear();
-                    for (const Point& point : _game->GetLegalSteps(_movingPirate)) {
+                    for (const Point& point : _game->legalSteps(_movingPirate)) {
                         _validMoves[cellFromPoint(point)] = point.z;
                     }
                     break;

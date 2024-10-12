@@ -8,7 +8,7 @@ class GuiElement {
 public:
     virtual ~GuiElement() = default;
 
-    virtual bool contains(const ScreenVector& point) = 0;
+    virtual bool contains(const ScreenVector&) { return false; }
     virtual void render(View& view) = 0;
 
     virtual void hoverOn() {}

@@ -9,40 +9,6 @@
 #include <iterator>
 
 /**
-* Color type used in configuration.
-*/
-struct Color {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
-
-    Color() : r(0), g(0), b(0), a(0) {}
-    Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a=255) : r(r), g(g), b(b), a(a) {}
-
-    template <class Container = std::initializer_list<Uint8>>
-    Color(const Container& container)
-        : a(255)
-    {
-        auto it = std::begin(container);
-        r = *it++;
-        g = *it++;
-        b = *it++;
-        if (it != container.end()) {
-            a = *it;
-        }
-    }
-
-    friend bool operator<(const Color& left, const Color& right)
-    {
-        return std::tie(left.r, left.g, left.b) <
-            std::tie(right.r, right.g, right.b);
-    }
-
-    SDL_Color sdl() const { return SDL_Color{ r, g, b, a }; }
-};
-
-/**
  * Window for drawing graphical primitives in immediate mode.
  *
  * A Window incapsulates SDL_Window and SDL_Renderer. It is able to draw simple
@@ -76,11 +42,12 @@ public:
     //
 
     // Fill screen with solid color
-    void clear(const Color& color);
+    void clear(const SDL_Color& color);
+    void clear(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
 
     // Draw colored axis-aligned rectangle
-    void drawRect(int x, int y, int w, int h, const Color& color);
-    void drawRect(const ScreenRect& rect, const Color& color);
+    void drawRect(int x, int y, int w, int h, const SDL_Color& color);
+    void drawRect(const ScreenRect& rect, const SDL_Color& color);
 
     // Draw a whole texture on screen
     void drawTexture(sdl::Texture& texture, int x, int y, int w, int h);
@@ -104,12 +71,13 @@ public:
         int cellWidth,
         int cellHeight,
         int gridLineWidth,
-        const Color& color);
+        const SDL_Color& color);
 
     void present();
 
 private:
-    void setColor(const Color& color);
+    void setColor(const SDL_Color& color);
+    void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
 
     sdl::Window _window;
     sdl::Renderer _renderer;

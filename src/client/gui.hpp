@@ -15,7 +15,7 @@ public:
     WrittenText(
         std::string text,
         r::Font fontId,
-        const Color& textColor,
+        const SDL_Color& textColor,
         const ScreenVector& size);
 
     const std::string& text() const { return _text; }
@@ -29,7 +29,7 @@ public:
 private:
     std::string _text;
     r::Font _fontId;
-    Color _textColor;
+    SDL_Color _textColor;
     sdl::Texture _texture;
     ScreenVector _screenOffset;
     ScreenRect _textureRect;
@@ -37,13 +37,26 @@ private:
 
 class SolidBackground : public GuiElement {
 public:
-    SolidBackground(const Color& color);
+    SolidBackground(const SDL_Color& color);
 
     bool contains(const ScreenVector& point) override;
     void render(View& window) override;
 
 private:
-    Color _color;
+    SDL_Color _color;
+};
+
+class MoveIndicator : public GuiElement {
+public:
+    explicit MoveIndicator(const RelativeRect& location);
+
+    void render(View&) override;
+
+private:
+    static constexpr SDL_Color _frameColor{0, 0, 0, 255};
+    static constexpr int _frameWidth = 2;
+
+    RelativeRect _location;
 };
 
 class Button : public GuiElement {
@@ -71,7 +84,7 @@ private:
 
     RelativeRect _location;
     WrittenText _text;
-    Color _bgColor;
-    Color _frameColor;
+    SDL_Color _bgColor;
+    SDL_Color _frameColor;
     std::function<void()> _action;
 };

@@ -21,6 +21,7 @@ else()
 endif()
 
 add_subdirectory(client)
+add_subdirectory(client-server-api)
 add_subdirectory(core)
 add_subdirectory(data)
 add_subdirectory(pack)

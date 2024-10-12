@@ -14,7 +14,7 @@ namespace {
 // TODO: Move to some drawing wrapper over SDL wrapper?
 // (wrapper in wrapper!)
 void drawPixel(
-    sdl::Surface& canvas, int x, int y, const Color& color)
+    sdl::Surface& canvas, int x, int y, const SDL_Color& color)
 {
     // TODO: Modify surface pixels directly, instead of filling a 1x1 rectangle
     SDL_Rect rect { x, y, 1, 1 };
@@ -25,7 +25,7 @@ void drawCircle(
     sdl::Surface& canvas,
     const ScreenVector& center,
     int radius,
-    const Color& color)
+    const SDL_Color& color)
 {
     for (int x = -radius; x <= radius; x++) {
         for (int y = -radius; y <= radius; y++) {
@@ -33,7 +33,7 @@ void drawCircle(
             if (diff < 0) {
                 drawPixel(canvas, center.x + x, center.y + y, color);
             } else if (diff < 1) {
-                Color newColor = color;
+                SDL_Color newColor = color;
                 newColor.a = static_cast<uint8_t>(
                     std::round(color.a * (1 - diff)));
                 drawPixel(canvas, center.x + x, center.y + y, newColor);
@@ -46,7 +46,7 @@ void drawArrow(
     sdl::Surface& canvas,
     const ScreenVector& start,
     const ScreenVector& end,
-    const Color& color)
+    const SDL_Color& color)
 {
     drawCircle(canvas, start, 10, color);
     drawCircle(canvas, end, 10, color);

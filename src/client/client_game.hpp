@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../core/JackalGame.h"
-#include "../core/GameState.h"
+#include "universal_game.hpp"
+
+#include <GameState.h>
 
 #include <memory>
 #include <map>
@@ -26,15 +27,14 @@ public:
         constexpr auto operator<=>(const Position&) const = default;
     };
 
-    ClientGame(std::shared_ptr<JackalGame> game);
-
     const GameState& coreState() const;
     int activePlayer() const;
     const ::Cell& cell(int x, int y) const;
     TypeCellEnum cellType(int x, int y) const;
     std::set<Cell> validMoves() const;
 
-    void startNewGame(int playerCount);
+    void startLocalGame(int playerCount);
+    void startRemoteGame();
     void activateCell(const Cell& cell);
     void update();
 
@@ -44,17 +44,16 @@ private:
         SelectTarget,
     };
 
-    std::shared_ptr<JackalGame> _game;
+    std::unique_ptr<UniversalGame> _game;
     GameState _coreState;
-
     State _state;
 
     int _movingPirate = 0;
     std::map<Cell, int> _validMoves;
     std::vector<Position> _moveCandidates;
 
-    int _playerCount;
-    int _activePlayer;
+    int _playerCount = 0;
+    int _activePlayer = 0;
 };
 
 ClientGame::Cell cellFromPoint(const Point& point);

@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package proto;
+
+enum MoveType {
+    MOVE_TYPE_RUN = 0;
+    MOVE_TYPE_DRINK_RUM = 1;
+    MOVE_TYPE_NONE = 2;
+}
+
+enum CellType {
+	CELL_TYPE_UNSPECIFIED = 0;
+
+	CELL_TYPE_ARROW = 255;
+	CELL_TYPE_HORSE = 256;
+	CELL_TYPE_ICE = 257;
+	CELL_TYPE_CANNIBAL = 258;
+	CELL_TYPE_FORT = 259;
+	CELL_TYPE_NATIVE_WOMAN = 260;
+	CELL_TYPE_PITFALL = 261;
+	CELL_TYPE_RUM = 262;
+	CELL_TYPE_CROCODILE = 263;
+	CELL_TYPE_DIFFICULT_TERRAIN = 264;
+	CELL_TYPE_TREASURE = 265;
+	CELL_TYPE_CANNON_UP = 266;
+	CELL_TYPE_CANNON_LEFT = 267;
+	CELL_TYPE_CANNON_RIGHT = 268;
+	CELL_TYPE_CANNON_DOWN = 269;
+	CELL_TYPE_BALOON = 270;
+	CELL_TYPE_AIRPLANE = 271;
+	CELL_TYPE_GRASS = 272;
+	CELL_TYPE_CLOSED = 300;
+	CELL_TYPE_WATER = 400;
+	CELL_TYPE_ROOT = 500;
+};
+
+enum MoneyEvent {
+	MONEY_EVENT_TYPE_UP = 0;
+	MONEY_EENT_TYPE_DOWN = 1;
+	MONEY_EVENT_TYPE_NOT_MONEY_EVENT = 2;
+}
+
+enum PirateEvent {
+	PIRATE_EVENT_TYPE_REVIVE = 0;
+	PIRATE_EVENT_TYPE_DIE = 1;
+	PIRATE_EVENT_TYPE_DRINK = 2;
+	PIRATE_EVENT_TYPE_CAN_MOVE = 3;
+	PIRATE_EVENT_TYPE_FALL_INTO_A_TRAP = 4;
+	PIRATE_EVENT_TYPE_WITH_SHIP = 5;
+	PIRATE_EVENT_TYPE_OPEN_CELL = 6;
+	PIRATE_EVENT_TYPE_NOT_PIRATE_EVENT = 7;
+}
+
+enum ResponseType {
+	RESPONSE_TYPE_ILLEGAL_TURN = 0;
+	RESPONSE_TYPE_OK = 1;
+	RESPONSE_TYPE_WAIT_TURN = 2;
+}
+
+message TimeState {
+	int32 day = 1;
+	int32 step = 2;
+}
+
+message Point {
+    int32 x = 1;
+    int32 y = 2;
+    int32 z = 3;
+}
+
+message Pirate {
+    bool is_alive = 1;
+    bool has_money = 2;
+    MoveType move_type = 3;
+    Point place = 4;
+    int32 player_id = 5;
+}
+
+message Cell {
+	CellType type = 1;
+	int32 money = 2;
+	repeated int32 pirates = 3;
+}
+
+message CellList {
+	repeated Cell cells = 1;
+}
+
+message Map {
+	int32 size1 = 1;
+	int32 size2 = 2;
+	repeated CellList cell_lists = 3;
+}
+
+message GameState {
+    repeated Pirate pirates = 1;
+	Map map = 2;
+	repeated int32 movable_pirate_ids = 3;
+	repeated Point ship_points = 4;
+	TimeState current_time = 5;
+}
+
+message TurnDescriptor {
+	int32 pirate_id = 1;
+	Point to = 2;
+	Point from = 3;
+	CellType cell_to = 4;
+	MoneyEvent money_event = 5;
+	PirateEvent pirate_event = 6;
+}
+
+message ChangeMap {
+	repeated TurnDescriptor turns = 1;
+	repeated TimeState time = 2;
+}
+
+message PirateIdRequest {
+	int32 pirate_id = 1;
+}
+
+message MakeTurnRequest {
+	int32 pirate_id = 1;
+	Point target_point = 2;
+}
+
+message NewGameRequest {
+	int32 player_count = 1;
+}
+
+message EmptyRequest { }
+
+message StatusResponse {
+	ResponseType response_type = 1;
+}
+
+message EmptyResponse { }
+
+service JackalService {
+	rpc NewGame(NewGameRequest) returns (EmptyResponse) {}
+    rpc GetGameState(EmptyRequest) returns (GameState) {}
+	rpc GetChangesMap(TimeState) returns (ChangeMap) {}
+	rpc GetLegalSteps(PirateIdRequest) returns (stream Point) {}
+	rpc MakeTurn(MakeTurnRequest) returns (StatusResponse) {}
+	rpc UseMoney(PirateIdRequest) returns (StatusResponse) {}
+}

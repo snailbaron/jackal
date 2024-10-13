@@ -52,7 +52,6 @@ private:
     std::map<Cell, int> _validMoves;
     std::vector<Position> _moveCandidates;
 
-    int _playerCount = 0;
     int _activePlayer = 0;
 };
 

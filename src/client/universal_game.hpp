@@ -6,6 +6,7 @@
 
 #include <grpcpp/channel.h>
 
+#include <chrono>
 #include <memory>
 
 class UniversalGame {
@@ -45,7 +46,13 @@ public:
     ResponseType useMoney(int pirateId) override;
 
 private:
+    using Clock = std::chrono::system_clock;
+    static const Clock::duration updateDelay;
+
     std::shared_ptr<grpc::Channel> _channel;
     std::unique_ptr<proto::JackalService::Stub> _stub;
-    grpc::ClientContext _context;
+
+    GameState _gameState;
+    Clock::time_point _startTime = Clock::now();
+    size_t _nextUpdateFrame = 0;
 };

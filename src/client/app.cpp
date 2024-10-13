@@ -54,14 +54,6 @@ void App::setMainMenu()
     _view->createGuiElement<SolidBackground>(SDL_Color{255, 250, 240});
 
     _view->createGuiElement<Button>(
-        RelativeRect(0.3, 0.2, 0.4, 0.07),
-        "New Game",
-        [this] {
-            _game.startLocalGame(1);
-            setGameField();
-        });
-
-    _view->createGuiElement<Button>(
         RelativeRect(0.3, 0.3, 0.4, 0.07),
         "Hot Seat",
         [this] {

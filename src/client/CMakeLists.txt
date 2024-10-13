@@ -57,3 +57,11 @@ add_custom_command(TARGET client POST_BUILD
         $<TARGET_FILE_DIR:client>/jackal.data
     COMMAND_EXPAND_LISTS
 )
+
+install(TARGETS client)
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/jackal.yaml"
+        "${PROJECT_BINARY_DIR}/assets/jackal.data"
+    TYPE BIN
+)

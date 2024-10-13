@@ -10,6 +10,8 @@
 #include <format>
 #include <source_location>
 
+using namespace std::chrono_literals;
+
 namespace {
 
 void check(
@@ -61,32 +63,50 @@ RemoteGame::RemoteGame()
 
 void RemoteGame::newGame()
 {
-    check(_stub->NewGame(&_context, proto::NewGameRequest{}, nullptr));
+    auto context = grpc::ClientContext{};
+    auto response = proto::EmptyResponse{};
+    check(_stub->NewGame(&context, proto::NewGameRequest{}, &response));
 }
 
 void RemoteGame::newGame(int playerCount)
 {
+    auto context = grpc::ClientContext{};
+
     auto newGameRequest = proto::NewGameRequest{};
     newGameRequest.set_player_count(playerCount);
-    check(_stub->NewGame(&_context, newGameRequest, nullptr));
+
+    auto response = proto::EmptyResponse{};
+
+    check(_stub->NewGame(&context, newGameRequest, &response));
 }
 
 GameState RemoteGame::gameState()
 {
-    auto protoGameState = proto::GameState{};
-    check(_stub->GetGameState(
-        &_context, proto::EmptyRequest{}, &protoGameState));
-    return decode(protoGameState);
+    auto currentFrame = (Clock::now() - _startTime) / updateDelay;
+    if (currentFrame >= _nextUpdateFrame) {
+        _nextUpdateFrame = currentFrame + 1;
+
+        auto context = grpc::ClientContext{};
+
+        auto protoGameState = proto::GameState{};
+        check(_stub->GetGameState(
+            &context, proto::EmptyRequest{}, &protoGameState));
+        _gameState = decode(protoGameState);
+    }
+
+    return _gameState;
 }
 
 std::vector<Point> RemoteGame::legalSteps(int pirateId)
 {
+    auto context = grpc::ClientContext{};
+
     auto points = std::vector<Point>{};
 
     auto request = proto::PirateIdRequest{};
     request.set_pirate_id(pirateId);
 
-    auto reader = _stub->GetLegalSteps(&_context, request);
+    auto reader = _stub->GetLegalSteps(&context, request);
     for (auto protoPoint = proto::Point{}; reader->Read(&protoPoint); ) {
         points.push_back(decode(protoPoint));
     }
@@ -96,23 +116,30 @@ std::vector<Point> RemoteGame::legalSteps(int pirateId)
 
 ResponseType RemoteGame::makeTurn(int pirateId, const Point& targetPoint)
 {
+    auto context = grpc::ClientContext{};
+
     auto request = proto::MakeTurnRequest{};
     request.set_pirate_id(pirateId);
     *request.mutable_target_point() = encode(targetPoint);
 
     auto response = proto::StatusResponse{};
 
-    check(_stub->MakeTurn(&_context, request, &response));
+    check(_stub->MakeTurn(&context, request, &response));
     return (ResponseType)response.response_type();
 }
 
 ResponseType RemoteGame::useMoney(int pirateId)
 {
+    auto context = grpc::ClientContext{};
+
     auto request = proto::PirateIdRequest{};
     request.set_pirate_id(pirateId);
 
     auto response = proto::StatusResponse{};
 
-    check(_stub->UseMoney(&_context, request, &response));
+    check(_stub->UseMoney(&context, request, &response));
     return (ResponseType)response.response_type();
 }
+
+const RemoteGame::Clock::duration RemoteGame::updateDelay =
+    std::chrono::duration_cast<Clock::duration>(0.5s);

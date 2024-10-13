@@ -5,6 +5,8 @@
 
 namespace {
 
+constexpr int PlayerCount = 4;
+
 Point makePoint(const ClientGame::Cell& cell, int depth)
 {
     return {cell.x + 2, cell.y + 2, depth};
@@ -65,7 +67,6 @@ void ClientGame::startLocalGame(int playerCount)
     _game = std::make_unique<LocalGame>();
     _coreState = _game->gameState();
     _state = State::SelectSubject;
-    _playerCount = playerCount;
     _activePlayer = 0;
     _game->newGame(playerCount);
 }
@@ -159,7 +160,7 @@ void ClientGame::activateCell(const Cell& cell)
                     break;
 
                 case Ok:
-                    _activePlayer = (_activePlayer + 1) % _playerCount;
+                    _activePlayer = (_activePlayer + 1) % PlayerCount;
                     _state = State::SelectSubject;
                     break;
 

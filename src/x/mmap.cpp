@@ -13,6 +13,7 @@
 #include <cstring>
 #include <format>
 #include <source_location>
+#include <string_view>
 
 namespace x {
 
@@ -28,27 +29,30 @@ void checkErrno(std::source_location sl = std::source_location::current())
     };
 }
 #elif defined(_WIN32)
-[[noreturn]] void throwWindowsError()
+[[noreturn]] void throwWindowsError(std::string_view message)
 {
     DWORD error = GetLastError();
 
     LPTSTR messageBuffer = nullptr;
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        error,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        messageBuffer,
-        0,
-        NULL);
+    if (FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            error,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR)&messageBuffer,
+            0,
+            NULL) == 0) {
+        auto formatMessageError = GetLastError();
+        throw Error{std::format("format message error: {}", formatMessageError)};
+    }
 
-    std::string message{messageBuffer};
+    auto finalMessage = std::format("{}: {}", message, messageBuffer);
 
     LocalFree(messageBuffer);
 
-    throw Error{message};
+    throw Error{finalMessage};
 }
 #endif
 
@@ -110,12 +114,12 @@ void MemoryMap::map(const std::filesystem::path& path)
         FILE_ATTRIBUTE_NORMAL,
         NULL);
     if (fileHandle == INVALID_HANDLE_VALUE) {
-        throwWindowsError();
+        throwWindowsError(std::format("cannot read file '{}'", path.string()));
     }
 
     LARGE_INTEGER fileSize;
     if (GetFileSizeEx(fileHandle, &fileSize) == 0) {
-        throwWindowsError();
+        throwWindowsError("cannot get file size");
     }
     _len = fileSize.QuadPart;
 
@@ -127,12 +131,12 @@ void MemoryMap::map(const std::filesystem::path& path)
         0,
         NULL);
     if (mappingHandle == NULL) {
-        throwWindowsError();
+        throwWindowsError("cannot create file mapping");
     }
     _mappingHandle = mappingHandle;
 
     if (CloseHandle(fileHandle) == 0) {
-        throwWindowsError();
+        throwWindowsError("cannot close file handle");
     }
 
     LPVOID addr = MapViewOfFile(
@@ -142,7 +146,7 @@ void MemoryMap::map(const std::filesystem::path& path)
         0,
         0);
     if (addr == NULL) {
-        throwWindowsError();
+        throwWindowsError("cannot create file map view");
     }
     _addr = addr;
 #endif

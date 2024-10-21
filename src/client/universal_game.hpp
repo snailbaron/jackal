@@ -2,57 +2,79 @@
 
 #include <JackalGame.h>
 
-#include <server.grpc.pb.h>
+#include <api.pb.h>
 
-#include <grpcpp/channel.h>
+#include <asio.hpp>
+#include <asio/experimental/coro.hpp>
 
 #include <chrono>
 #include <memory>
+#include <mutex>
+#include <optional>
 
 class UniversalGame {
 public:
     virtual ~UniversalGame() = default;
 
+    virtual void update() {}
+
     virtual void newGame() = 0;
-    virtual void newGame(int playerCount) = 0;
-    virtual GameState gameState() = 0;
-    virtual std::vector<Point> legalSteps(int pirateId) = 0;
+    virtual const GameState& gameState() = 0;
+    virtual std::vector<Point> legalMoves(int pirateId) = 0;
     virtual ResponseType makeTurn(int pirateId, const Point& targetPoint) = 0;
     virtual ResponseType useMoney(int pirateId) = 0;
 };
 
 class LocalGame : public UniversalGame {
 public:
+    LocalGame();
+
     void newGame() override;
-    void newGame(int playerCount) override;
-    GameState gameState() override;
-    std::vector<Point> legalSteps(int pirateId) override;
+    const GameState& gameState() override;
+    std::vector<Point> legalMoves(int pirateId) override;
     ResponseType makeTurn(int pirateId, const Point& targetPoint) override;
     ResponseType useMoney(int pirateId) override;
 
 private:
     JackalGame _game;
+    std::optional<GameState> _state;
+};
+
+class UpdateReader {
+public:
+    UpdateReader(asio::ip::tcp::socket& socket);
+
+    std::optional<proto::Update> operator()();
+
+private:
+    std::optional<proto::Update> tryReadUpdate();
+
+    asio::ip::tcp::socket& _socket;
+    std::array<char, 4> _sizeBuffer;
+    std::string _messageBuffer;
+    size_t _sizeBytesRead = 0;
+    size_t _messageBytesRead = 0;
 };
 
 class RemoteGame : public UniversalGame {
 public:
     RemoteGame();
 
+    void update() override;
+
     void newGame() override;
-    void newGame(int playerCount) override;
-    GameState gameState() override;
-    std::vector<Point> legalSteps(int pirateId) override;
+    const GameState& gameState() override;
+    std::vector<Point> legalMoves(int pirateId) override;
     ResponseType makeTurn(int pirateId, const Point& targetPoint) override;
     ResponseType useMoney(int pirateId) override;
 
 private:
-    using Clock = std::chrono::system_clock;
-    static const Clock::duration updateDelay;
-
-    std::shared_ptr<grpc::Channel> _channel;
-    std::unique_ptr<proto::JackalService::Stub> _stub;
+    asio::io_context _ioContext;
+    asio::ip::tcp::socket _socket;
+    UpdateReader _updateReader;
 
     GameState _gameState;
-    Clock::time_point _startTime = Clock::now();
-    size_t _nextUpdateFrame = 0;
+    std::vector<std::vector<Point>> _allLegalMoves;
+
+    asio::experimental::coro<> _readServerUpdates;
 };

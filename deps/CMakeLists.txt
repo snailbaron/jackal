@@ -1,3 +1,5 @@
+include(ExternalProject)
+
 set(SDL2IMAGE_AVIF OFF)
 set(SDL2IMAGE_BMP ON)
 set(SDL2IMAGE_GIF OFF)
@@ -25,16 +27,21 @@ set(SDL2TTF_VENDORED TRUE)
 # https://cmake.org/cmake/help/latest/policy/CMP0077.html.
 set(YAML_BUILD_SHARED_LIBS FALSE CACHE BOOL "build yaml-cpp shared libraries")
 
-# Disable asm in grcp build
-set(OPENSSL_NO_ASM TRUE)
+set(protobuf_BUILD_TESTS FALSE)
+set(protobuf_BUILD_LIBUPB FALSE)
 set(protobuf_INSTALL FALSE)
-set(utf8_range_ENABLE_INSTALL FALSE)
+set(protobuf_MSVC_STATIC_RUNTIME FALSE)
+
+set(FLATBUFFERS_INSTALL FALSE)
 
 add_subdirectory(flatbuffers)
-add_subdirectory(grpc)
+add_subdirectory(protobuf)
 add_subdirectory(SDL)
 add_subdirectory(SDL_image)
 add_subdirectory(SDL_ttf)
 add_subdirectory(yaml-cpp)
 
 add_subdirectory(arg)
+
+add_library(asio INTERFACE)
+target_include_directories(asio INTERFACE asio/asio/include)

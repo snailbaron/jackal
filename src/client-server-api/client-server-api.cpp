@@ -2,6 +2,41 @@
 
 #include <x.hpp>
 
+std::string encodeSize(uint32_t size)
+{
+    namespace io = google::protobuf::io;
+
+    auto string = std::string{};
+
+    auto rawStream = io::StringOutputStream{&string};
+    auto codedStream = io::CodedOutputStream{&rawStream};
+    codedStream.WriteLittleEndian32(size);
+
+    return string;
+}
+
+uint32_t decodeSize(const std::array<char, 4>& encodedSize)
+{
+    namespace io = google::protobuf::io;
+
+    auto rawStream = io::ArrayInputStream(encodedSize.data(), encodedSize.size());
+    auto codedStream = io::CodedInputStream{&rawStream};
+
+    auto size = uint32_t{};
+    if (!codedStream.ReadLittleEndian32(&size)) {
+        throw x::Error{"decodeSize failed"};
+    }
+
+    return size;
+}
+
+std::string serializeWithSize(const google::protobuf::Message& proto)
+{
+    auto messageString = proto.SerializeAsString();
+    auto sizeString = encodeSize(messageString.size());
+    return sizeString + messageString;
+}
+
 proto::TimeState encode(const TimeState& timeState)
 {
     auto protoTimeState = proto::TimeState{};
@@ -206,4 +241,33 @@ ChangeMap decode(const proto::ChangeMap& protoChangeMap)
         changeMap.time.push_back(decode(protoTime));
     }
     return changeMap;
+}
+
+proto::AllLegalMoves encodeAllLegalMoves(
+    const std::vector<std::vector<Point>>& allLegalMoves)
+{
+    auto protoAllLegalMoves = proto::AllLegalMoves{};
+    for (const auto& pirateLegalMoves : allLegalMoves) {
+        auto protoPirateLegalMoves = protoAllLegalMoves.add_pirate_legal_moves();
+        for (const auto& point : pirateLegalMoves) {
+            *protoPirateLegalMoves->add_points() = encode(point);
+        }
+    }
+    return protoAllLegalMoves;
+}
+
+std::vector<std::vector<Point>> decodeAllLegalMoves(
+    const proto::AllLegalMoves& protoAllLegalMoves)
+{
+    auto allLegalMoves = std::vector<std::vector<Point>>{};
+    allLegalMoves.reserve(protoAllLegalMoves.pirate_legal_moves().size());
+    for (const auto& protoPirateLegalMoves :
+            protoAllLegalMoves.pirate_legal_moves()) {
+        auto& pirateLegalMoves = allLegalMoves.emplace_back();
+        pirateLegalMoves.reserve(protoPirateLegalMoves.points().size());
+        for (const auto& protoPoint : protoPirateLegalMoves.points()) {
+            pirateLegalMoves.push_back(decode(protoPoint));
+        }
+    }
+    return allLegalMoves;
 }

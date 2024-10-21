@@ -63,7 +63,7 @@ void App::setMainMenu()
 
     _view->createGuiElement<Button>(
         RelativeRect(0.3, 0.4, 0.4, 0.07),
-        "New Remote Game",
+        "Remote Game",
         [this] {
             _game.startRemoteGame();
             setGameField();
@@ -115,6 +115,14 @@ void App::setGameField()
         [this] {
             setMainMenu();
         });
+
+    _view->createGuiElement<Button>(
+        RelativeRect(0.9, 0.15, 0.08, 0.05),
+        "Start New Game",
+        [this] {
+            _game.clearGame();
+        });
+
     _view->createGuiElement<MoveIndicator>(
-        RelativeRect(0.9, 0.15, 0.05, 0.05));
+        RelativeRect(0.9, 0.30, 0.05, 0.05));
 }

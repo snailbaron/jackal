@@ -46,25 +46,25 @@ void initStartClosedCells()
 	tmp_pair.first.push_back(8);
 	tmp_pair.first.push_back(16);
 	tmp_pair.first.push_back(64);
-	tmp_pair.second = 10;	
+	tmp_pair.second = 10;
 	StartClosedCells.push_back(tmp_pair);
 	tmp_pair.first.clear();
-	
+
 	tmp_pair.first.push_back(1);
 	tmp_pair.first.push_back(4);
 	tmp_pair.first.push_back(32);
 	tmp_pair.first.push_back(128);
-	tmp_pair.second = 10;	
+	tmp_pair.second = 10;
 	StartClosedCells.push_back(tmp_pair);
 	tmp_pair.first.clear();
 
 	tmp_pair.first.push_back(165);
-	tmp_pair.second = 5;	
+	tmp_pair.second = 5;
 	StartClosedCells.push_back(tmp_pair);
 	tmp_pair.first.clear();
 
 	tmp_pair.first.push_back(90);
-	tmp_pair.second = 5;	
+	tmp_pair.second = 5;
 	StartClosedCells.push_back(tmp_pair);
 	tmp_pair.first.clear();
 
@@ -118,12 +118,12 @@ void initStartClosedCells()
 	tmp_pair.second = 15;
 	StartClosedCells.push_back(tmp_pair);
 	tmp_pair.first.clear();
-	// Пушки	
+	// Пушки
 	tmp_pair.first.push_back(CannonUp);
 	tmp_pair.first.push_back(CannonLeft);
 	tmp_pair.first.push_back(CannonRight);
 	tmp_pair.first.push_back(CannonDown);
-	tmp_pair.second = 2;	
+	tmp_pair.second = 2;
 	StartClosedCells.push_back(tmp_pair);
 	tmp_pair.first.clear();
 	// Baloon
@@ -151,12 +151,12 @@ JackalGame::PirateCanComeThis JackalGame::CheckLegalityCell(const Pirate& pirate
 	{
 		if (pirate.place == state.ships[pirate.id_player])
 		{
-			
+
 		}
 		else
-			if(cell_to->type == Water) 
+			if(cell_to->type == Water)
 				return YES;
-			else 
+			else
 				return NO;
 	}
 
@@ -212,19 +212,18 @@ void JackalGame::NewGame(int count_players)
 	{
 		for (int j = 0; j<i; j++)
 		{
-			closed_treasure.push_back(6-i);		
+			closed_treasure.push_back(6-i);
 		}
 	}
 	for (int i = 1; i<5 ; i++)
 	{
 		for (int j = 0; j<i; j++)
 		{
-			closed_difficuilt_terrain.push_back(6-i);		
+			closed_difficuilt_terrain.push_back(6-i);
 		}
-	}	
+	}
 	ResetGameState(this->state);
 }
-
 
 GameState JackalGame::GetGameState()
 {
@@ -243,10 +242,10 @@ vector<Point> JackalGame::GetLegalSteps(int pirate)
 	vector<Point> ans;
 	ans.clear();
 	Point dot;
-	
+
 	if ((!corsair.live)||(corsair.movie!=run))
 		return ans;
-	
+
 	Cell* cell = GetCell(state,corsair.place);
 	bool StandartStep = true;
 
@@ -259,7 +258,7 @@ vector<Point> JackalGame::GetLegalSteps(int pirate)
 			if (corsair.place.y<(3 + SIZE_ISLAND - 2)) {dot.x = corsair.place.x;   dot.y = corsair.place.y+1; dot.z = 1; ans.push_back(dot);}
 			if (corsair.place.y>4) {dot.x = corsair.place.x;   dot.y = corsair.place.y-1; dot.z = 1; ans.push_back(dot);}
 		}
-		else if ((SIZE_ISLAND+3) == corsair.place.x) {	
+		else if ((SIZE_ISLAND+3) == corsair.place.x) {
 			dot.x = corsair.place.x-1; dot.y = corsair.place.y;   dot.z = 1; if (YES == CheckLegalityCell(corsair,dot)) ans.push_back(dot);
 			if (corsair.place.y<(3 + SIZE_ISLAND - 2)) { dot.x = corsair.place.x;   dot.y = corsair.place.y+1; dot.z = 1; ans.push_back(dot);}
 			if (corsair.place.y>4) {dot.x = corsair.place.x;   dot.y = corsair.place.y-1; dot.z = 1; ans.push_back(dot);}
@@ -346,7 +345,7 @@ vector<Point> JackalGame::GetLegalSteps(int pirate)
 				}
 				if (ans.size()<1)
 					ans = second_ans;
-			StandartStep = false;	
+			StandartStep = false;
 		}
 		if (cell->type == Ice)
 		{
@@ -380,7 +379,7 @@ vector<Point> JackalGame::GetLegalSteps(int pirate)
 			}
 			else
 				ans.push_back(corsair.place-shift);
-			StandartStep = false;	
+			StandartStep = false;
 		}
 		if (cell->type == Airplane)
 		{
@@ -521,7 +520,7 @@ void JackalGame::OpenCell(const Point &to)
 			cur = next;
 		}
 	}
-	
+
 	//Допилить
 }
 
@@ -601,7 +600,7 @@ void JackalGame::makeMovie(Point from, Point to, int pirate)
 ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 {
 	#ifdef DEBUG_MODE
-	
+
 	#endif
 
 	//Проверить, можно ли ходить данным пиратом
@@ -624,7 +623,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 	if (flag) return IllegalTurn;
 	}
 
-	
+
 
 	Pirate& corsair = state.pirates[pirate];
 	Cell* cell_from = GetCell(state,corsair.place);
@@ -650,7 +649,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 		cell_to->pirate.clear();
 		corsair.live = false;
 		changeTime(pirate);
-		return Ok; 
+		return Ok;
 	}
 
 
@@ -697,7 +696,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 			state.pirates[cell_from->pirate[0]].place = to;
 			saveToHistory(Water,from,to,not_money_event,cell_from->pirate[0],with_ship);
 			for (int i =1; i<cell_from->pirate.size(); i++)
-			{				
+			{
 				cell_to->pirate.push_back(cell_from->pirate[i]);
 				state.pirates[cell_from->pirate[i]].place = to;
 				saveToHistory(Water,from,to,not_money_event,cell_from->pirate[i],not_pirate_event);
@@ -708,7 +707,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 			//записать в хистори
 			changeTime(pirate);
 			return Ok;
-		}		
+		}
 	}
 	//если пират ступает на свой корабль
 	if (state.ships[corsair.id_player] == to)
@@ -742,10 +741,10 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 			cell_to->pirate.erase(beg,cell_to->pirate.end());
 			corsair.live = false;
 			changeTime(pirate);
-			return Ok; 
+			return Ok;
 		}
 	}
-	
+
 
 	if (cell_to->type == Closed)
 	{
@@ -757,7 +756,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 
 	//Выгоняем всех врагов на корабль
 	if ((cell_to->pirate.size()>0)&&(state.pirates[cell_to->pirate[0]].id_player != corsair.id_player))
-	{	
+	{
 		//Обработать случай, когда некоторые пираты не могут ходить
 		for (int i = 0; i<cell_to->pirate.size(); i++)
 			{
@@ -786,7 +785,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 				state.pirates[cell_to->pirate[i]].place = ship_place;
 				ship_cell->pirate.push_back(cell_to->pirate[i]);
 			}
-			cell_to->pirate.clear();		
+			cell_to->pirate.clear();
 		}
 		else
 		{
@@ -801,7 +800,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 					saveToHistory(Water,state.pirates[cell_to->pirate[i]].place,state.pirates[cell_to->pirate[i]].place,not_money_event,cell_to->pirate[i],die);
 				state.pirates[cell_to->pirate[i]].live = false;
 			}
-			cell_to->pirate.clear();		
+			cell_to->pirate.clear();
 		}
 	}
 
@@ -839,9 +838,9 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 				}
 			}
 		saveToHistory(cell_to->type,corsair.place,to,not_money_event,pirate,movie);
-		makeMovie(corsair.place,to,pirate);		
+		makeMovie(corsair.place,to,pirate);
 		changeTime(pirate);
-		return Ok; 
+		return Ok;
 	}
 	if (cell_to->type<=Ice)
 	{
@@ -854,7 +853,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 			vector<Point> next_turn = GetLegalSteps(pirate);
 			if (next_turn.size() == 1)
 				return Turn(pirate,next_turn[0]);
-			
+
 			if (next_turn.size() == 0)
 			{
 				MoneyEventType event_money = not_money_event;
@@ -867,7 +866,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 				cell_to->pirate.clear();
 				corsair.live = false;
 				changeTime(pirate);
-				return Ok; 
+				return Ok;
 			}
 		}
 		return WaitTurn;
@@ -885,7 +884,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 		cell_to->pirate.clear();
 		corsair.live = false;
 		changeTime(pirate);
-		return Ok; 
+		return Ok;
 	}
 	if (cell_to->type == Rum)
 	{
@@ -893,7 +892,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 		makeMovie(corsair.place,to,pirate);
 		corsair.movie = drink_rum;
 		changeTime(pirate);
-		return Ok; 
+		return Ok;
 	}
 	//Пушки
 	if ((cell_to->type>=CannonUp)&&(cell_to->type<=CannonDown))
@@ -937,7 +936,7 @@ ResponseType JackalGame::Turn(int pirate, Point to, bool forced)
 		saveToHistory(cell_to->type,corsair.place,to,event_money,pirate,not_pirate_event);
 		makeMovie(corsair.place,to,pirate);
 		changeTime(pirate);
-		return Ok; 
+		return Ok;
 	}
 	saveToHistory(cell_to->type,corsair.place,to,not_money_event,pirate,not_pirate_event);
 	makeMovie(corsair.place,to,pirate);

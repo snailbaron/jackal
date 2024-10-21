@@ -8,7 +8,6 @@ add_executable(client
     log.cpp
     main.cpp
     resources.cpp
-    sdl.cpp
     timer.cpp
     universal_game.cpp
     view.cpp
@@ -16,17 +15,15 @@ add_executable(client
 )
 target_link_libraries(client
     PRIVATE
+        asio
         client-server-api
         core
         data
         resource-ids
+        sdl
         x
 
         yaml-cpp
-        SDL2::SDL2-static
-        SDL2::SDL2main
-        SDL2_image::SDL2_image-static
-        SDL2_ttf::SDL2_ttf-static
 )
 add_dependencies(client assets)
 

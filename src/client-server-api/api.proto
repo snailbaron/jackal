@@ -114,32 +114,35 @@ message ChangeMap {
 	repeated TimeState time = 2;
 }
 
-message PirateIdRequest {
-	int32 pirate_id = 1;
-}
-
-message MakeTurnRequest {
+message MakeMoveRequest {
 	int32 pirate_id = 1;
 	Point target_point = 2;
 }
 
-message NewGameRequest {
-	int32 player_count = 1;
+message UseMoneyRequest {
+	int32 pirate_id = 1;
 }
 
-message EmptyRequest { }
+message NewGameRequest {}
 
-message StatusResponse {
-	ResponseType response_type = 1;
+message Request {
+	string player_id = 1;
+	oneof request {
+		MakeMoveRequest make_move = 2;
+		UseMoneyRequest use_money = 3;
+		NewGameRequest new_game = 4;
+	}
 }
 
-message EmptyResponse { }
+message PirateLegalMoves {
+	repeated Point points = 1;
+}
 
-service JackalService {
-	rpc NewGame(NewGameRequest) returns (EmptyResponse) {}
-    rpc GetGameState(EmptyRequest) returns (GameState) {}
-	rpc GetChangesMap(TimeState) returns (ChangeMap) {}
-	rpc GetLegalSteps(PirateIdRequest) returns (stream Point) {}
-	rpc MakeTurn(MakeTurnRequest) returns (StatusResponse) {}
-	rpc UseMoney(PirateIdRequest) returns (StatusResponse) {}
+message AllLegalMoves {
+	repeated PirateLegalMoves pirate_legal_moves = 1;
+}
+
+message Update {
+	GameState game_state = 1;
+	AllLegalMoves all_legal_moves = 2;
 }
